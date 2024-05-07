@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 router.get('/books', getBooks);
-router.get('/book', getBook);
+router.get('/book/:bookId', getBook);
 router.post('/book', postBook);
 
 module.exports = router;
