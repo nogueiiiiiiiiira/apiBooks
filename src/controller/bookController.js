@@ -1,10 +1,10 @@
+
+const addBook = require('../service/bookService');
+
 const books = [];
 
 function getBooks(req, res) {
-    if (books.length > 0) {
-        return res.send(books);
-    }
-    return res.sendStatus(204);
+    
 }
 
 function getBook(req, res) {
@@ -16,15 +16,14 @@ function getBook(req, res) {
     return res.sendStatus(204);
 }
 
-function postBook(req, res) {
-    var body = req.body;
-    var existe = books.find((b) => b.id == body.id);
-    if (existe) {
-       return res.send({ message: "Id já utilizado." });
+async function postBook(req, res) {
+    var {nome, descricao, autor, valor, categoria} = req.body;
+    console.log(nome, descricao, autor, valor, categoria);
+    var result = await addBook(nome, descricao, autor, valor, categoria);
+    if(result){
+        return res.send(result).sendStatus(201);
     }
-
-    books.push(body);
-    res.send(body).sendStatus(201);
+    return res.send({message: 'Erro ao adicionar o livro!'})
 }
 
 module.exports = {
