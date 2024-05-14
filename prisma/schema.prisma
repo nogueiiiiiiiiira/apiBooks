@@ -15,3 +15,12 @@ model Book {
   valor String
   categoria String
 }
+
+model Librarian {
+  id Int @id @default(autoincrement())
+  nome String
+  cpf String
+  email String
+  telefone String
+  dataNasc DateTime
+}
