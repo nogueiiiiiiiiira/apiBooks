@@ -1,3 +1,5 @@
+//loanControler
+
 const {
     addLoan,
     listLoans,
@@ -52,32 +54,35 @@ async function getLoanByTitle(req, res) {
     return res.status(404).json({ message: 'Nenhum livro foi encontrado' });
 }
 
-const { format } = require('date-fns');
-
 async function postLoan(req, res) {
-    const { cpf, titulo } = req.body;
-    if (!cpf || !titulo) {
+    const { cpf, title } = req.body;
+    if (!cpf || !title) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
 
-    const dataEmp = format(new Date(), 'dd/MM/yyyy');
-    
-    const dataDev = new Date();
-    dataDev.setDate(dataDev.getDate() + 7);
-    const dataDevFormatted = format(dataDev, 'dd/MM/yyyy');
+    const dateEmp = new Date();
+    const dateDev = new Date();
+    dateDev.setDate(dateDev.getDate() + 7);
 
-    const result = await addLoan(cpf, titulo, dataEmp, dataDevFormatted);
-    if (result) {
+    const isoDateEmp = dateEmp.toISOString();
+    const isoDateDev = dateDev.toISOString();
+
+    try {
+        const result = await addLoan(cpf, title, isoDateEmp, isoDateDev);
         return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao realizar o empréstimo:', error);
+        return res.status(500).json({ message: 'Erro ao realizar o empréstimo.' });
     }
-    return res.status(500).json({ message: 'Erro ao realizar o empréstimo' });
 }
 
+
+
 async function updateLoan(req, res) {
-    const { cpf, titulo } = req.body;
+    const { cpf, title } = req.body;
     const { loanId } = req.params;
     
-    if (!cpf || !titulo) {
+    if (!cpf || !title) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
     
@@ -87,7 +92,7 @@ async function updateLoan(req, res) {
             return res.status(404).json({ message: 'Empréstimo não encontrado.' });
         }
         
-        const updatedLoan = await updateLoanService(loanId, cpf, titulo);
+        const updatedLoan = await updateLoanService(loanId, cpf, title);
         return res.status(200).json(updatedLoan);
     } catch (error) {
         console.error('Erro ao atualizar o empréstimo:', error);

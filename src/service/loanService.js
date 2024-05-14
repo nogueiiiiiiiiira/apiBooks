@@ -1,11 +1,13 @@
+//loanService
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function addLoan(cpf, titulo, dataEmp, dataDev) {
+async function addLoan(cpf, title, dataEmp, dataDev) {
     return await prisma.loan.create({
         data: {
             cpf,
-            titulo,
+            title,
             dataEmp,
             dataDev,
         }
@@ -34,24 +36,24 @@ async function listLoanByCPF(cpf) {
     });
 }
 
-async function listLoanByTitle(titulo) {
+async function listLoanByTitle(title) {
     return await prisma.loan.findMany({
         where: {
-            titulo: {
-                contains: titulo
+            title: {
+                contains: title
             }
         }
     });
 }
 
-async function updateLoanService(id, cpf, titulo) {
+async function updateLoanService(id, cpf, title) {
     return await prisma.loan.update({
         where: {
             id: Number(id)
         },
         data: {
             cpf,
-            titulo,
+            title,
         }
     });
 }
