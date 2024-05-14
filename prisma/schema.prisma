@@ -24,3 +24,11 @@ model Librarian {
   telefone String
   dataNasc DateTime
 }
+
+model Loan {
+  id Int @id @default(autoincrement())
+  cpf String
+  title String
+  dataEmp DateTime
+  dataDev DateTime
+}

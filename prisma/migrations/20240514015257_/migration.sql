@@ -17,3 +17,11 @@ CREATE TABLE "Librarian" (
     "telefone" TEXT NOT NULL,
     "dataNasc" DATETIME NOT NULL
 );
+
+CREATE TABLE "Loan" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "cpf" TEXT NOT NULL,
+    "titulo" TEXT NOT NULL,
+    "dataEmp" DATETIME NOT NULL,
+    "dataDev" DATETIME NOT NULL
+);

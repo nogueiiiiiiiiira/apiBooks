@@ -39,11 +39,9 @@ async function getLibrarianByName(req, res) {
     return res.status(404).json({ message: 'Nenhum bibliotecário com este nome encontrado.' });
 }
 
-// Considerar usar biblioteca moment.js aqui
 async function postLibrarian(req, res) {
     const { nome, cpf, email, telefone, dataNasc } = req.body;
 
-    // Verifica se a data de nascimento está no formato esperado (DD/MM/YYYY)
     const dateParts = dataNasc.split('/');
     if (dateParts.length !== 3) {
         return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
@@ -53,19 +51,16 @@ async function postLibrarian(req, res) {
     const month = parseInt(dateParts[1]) - 1;
     const year = parseInt(dateParts[2]);
 
-    // Verifica se os componentes da data formam uma data válida
     const isValidDate = !isNaN(day) && !isNaN(month) && !isNaN(year);
     if (!isValidDate) {
         return res.status(400).json({ message: 'Data de nascimento inválida.' });
     }
 
-    // Cria um objeto Date e verifica se a data é válida
     const birthDate = new Date(year, month, day);
     if (isNaN(birthDate.getTime())) {
         return res.status(400).json({ message: 'Data de nascimento inválida.' });
     }
 
-    // Formata a data de nascimento para o formato ISO-8601
     const isoDate = birthDate.toISOString();
 
     try {

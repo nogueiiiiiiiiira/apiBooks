@@ -14,11 +14,11 @@ async function addLibrarian(nome, cpf, email, telefone, dataNasc) {
 }
 
 async function listLibrarians() {
-    return await prisma.librarians.findMany();
+    return await prisma.librarian.findMany();
 }
 
 async function listLibrarianById(id) {
-    return await prisma.Librarian.findUnique({
+    return await prisma.librarian.findUnique({
         where: {
             id: Number(id)
         }
@@ -26,7 +26,7 @@ async function listLibrarianById(id) {
 }
 
 async function listLibrarianByName(nome) {
-    return await prisma.Librarian.findMany({
+    return await prisma.librarian.findMany({
         where: {
             nome: {
                 contains: nome
@@ -36,7 +36,7 @@ async function listLibrarianByName(nome) {
 }
 
 async function updateLibrarianService(id, nome, cpf, email, telefone, dataNasc) {
-    return await prisma.Librarian.update({
+    return await prisma.librarian.update({
         where: {
             id: Number(id)
         },
@@ -51,7 +51,7 @@ async function updateLibrarianService(id, nome, cpf, email, telefone, dataNasc) 
 }
 
 async function deleteLibrarianService(id) {
-    return await prisma.Librarian.delete({
+    return await prisma.librarian.delete({
         where: {
             id: Number(id)
         }
