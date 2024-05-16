@@ -25,6 +25,7 @@ async function cpfExists(cpf) {
   
     return books.length > 0;
   }
+
   async function addLoan(cpf, title, dataEmp, dataDev, res) {
     if (!await cpfExists(cpf)) {
       return res.status(400).json({ message: 'CPF não foi encontrado no banco de dados. Não foi possível realizar o empréstimo' });
@@ -34,6 +35,32 @@ async function cpfExists(cpf) {
       return res.status(400).json({ message: 'Título não foi encontrado no banco de dados. Não foi possível realizar o empréstimo' });
     }
   
+    // Find the book by title and update its stock
+    const book = await prisma.book.findUnique({
+      where: {
+        nome: title,
+      },
+    });
+  
+    if (!book) {
+      return res.status(400).json({ message: 'Livro não encontrado no banco de dados. Não foi possível realizar o empréstimo' });
+    }
+  
+    if (book.stock <= 0) {
+      return res.status(400).json({ message: 'Não há estoque suficiente para realizar o empréstimo' });
+    }
+  
+    // Decrease the stock by 1
+    const updatedBook = await prisma.book.update({
+      where: {
+        id: book.id,
+      },
+      data: {
+        estoque: book.estoque - 1,
+      },
+    });
+  
+    // Create the loan
     return await prisma.loan.create({
       data: {
         cpf,
