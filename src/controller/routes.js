@@ -51,4 +51,20 @@ router.post('/loan', postLoan);
 router.put('/loan/:loanId', updateLoan);
 router.delete('/loan/:loanId', deleteLoan);
 
+const {
+    getReaders,
+    getReaderById,
+    getReaderByName,
+    postReader,
+    updateReader,
+    deleteReader
+} = require('./readerController.js');
+
+router.get('/readers', getReaders);
+router.get('/reader/:readerId', getReaderById);
+router.get('/readerName/:readerName', getReaderByName);
+router.post('/reader', postReader);
+router.put('/reader/:readerId', updateReader);
+router.delete('/reader/:readerId', deleteReader);
+
 module.exports = router;
