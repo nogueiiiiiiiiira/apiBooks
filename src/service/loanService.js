@@ -18,30 +18,24 @@ async function listLoans() {
     return await prisma.loan.findMany();
 }
 
-async function listLoanById(id) {
-    return await prisma.loan.findUnique({
-        where: {
-            id: Number(id)
-        }
-    });
-}
-
-async function listLoanByCPF(cpf) {
+async function listLoanBySearch(search) {
     return await prisma.loan.findMany({
         where: {
-            cpf: {
-                contains: cpf
-            }
-        }
-    });
-}
-
-async function listLoanByTitle(title) {
-    return await prisma.loan.findMany({
-        where: {
-            title: {
-                contains: title
-            }
+            OR: [
+                {
+                    id: isNaN(search) ? undefined : Number(search) // Convertendo para número apenas se `search` for um número válido
+                },
+                {
+                    title: {
+                        contains: search
+                    }
+                },
+                {
+                    cpf: {
+                        contains: search
+                    }
+                }
+            ]
         }
     });
 }
@@ -69,9 +63,7 @@ async function deleteLoanService(id) {
 module.exports = {
     addLoan,
     listLoans,
-    listLoanById,
-    listLoanByCPF,
-    listLoanByTitle,
+    listLoanBySearch,
     updateLoanService,
     deleteLoanService
 };

@@ -17,20 +17,39 @@ async function listBooks() {
     return await prisma.book.findMany();
 }
 
-async function listBookById(id) {
-    return await prisma.book.findUnique({
-        where: {
-            id: Number(id)
-        }
-    });
-}
-
-async function listBookByName(nome) {
+async function listBookBySearch(search) {
     return await prisma.book.findMany({
         where: {
-            nome: {
-                contains: nome
-            }
+            OR: [
+                {
+                    id: Number(search)
+                },
+                {
+                    nome: {
+                        contains: search
+                    }
+                },
+                {
+                    descricao: {
+                        contains: search
+                    }
+                },
+                {
+                    autor: {
+                        contains: search
+                    }
+                },
+                {
+                    valor: {
+                        contains: search
+                    }
+                },
+                {
+                    categoria: {
+                        contains: search
+                    }
+                }
+            ]
         }
     });
 }
@@ -61,8 +80,7 @@ async function deleteBookService(id) {
 module.exports = {
     addBook,
     listBooks,
-    listBookById,
-    listBookByName,
+    listBookBySearch,
     updateBookService,
     deleteBookService
 };

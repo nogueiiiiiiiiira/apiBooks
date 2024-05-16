@@ -3,9 +3,7 @@
 const {
     addLoan,
     listLoans,
-    listLoanById,
-    listLoanByCPF,
-    listLoanByTitle,
+    listLoanBySearch,
     updateLoanService,
     deleteLoanService
 } = require("../service/loanService");
@@ -18,40 +16,16 @@ async function getLoans(req, res) {
     return res.status(204).send();
 }
 
-async function getLoanById(req, res) {
-    const { loanId } = req.params;
-    if (!loanId) {
-        return res.status(400).json({ message: 'ID é obrigatório' });
+async function getLoanBySearch(req, res) {
+    const { loanSearch } = req.params;
+    if (!loanSearch) {
+        return res.status(400).json({ message: 'Inserção é obrigatório.' });
     }
-    const result = await listLoanById(loanId);
-    if (result) {
-        return res.status(200).json(result);
-    }
-    return res.status(204).send();
-}
-
-async function getLoanByCPF(req, res) {
-    const { loanCPF } = req.params;
-    if (!loanCPF) {
-        return res.status(400).json({ message: 'Nenhum CPF foi encontrado' });
-    }
-    const result = await listLoanByCPF(loanCPF);
+    const result = await listLoanBySearch(loanSearch);
     if (result && result.length > 0) {
         return res.status(200).json(result);
     }
-    return res.status(404).json({ message: 'Nenhum CPF foi encontrado' });
-}
-
-async function getLoanByTitle(req, res) {
-    const { loanTitle } = req.params;
-    if (!loanTitle) {
-        return res.status(400).json({ message: 'Nenhum livro foi encontrado' });
-    }
-    const result = await listLoanByTitle(loanTitle);
-    if (result && result.length > 0) {
-        return res.status(200).json(result);
-    }
-    return res.status(404).json({ message: 'Nenhum livro foi encontrado' });
+    return res.status(404).json({ message: 'Nada foi encontrado.' });
 }
 
 async function postLoan(req, res) {
@@ -75,8 +49,6 @@ async function postLoan(req, res) {
         return res.status(500).json({ message: 'Erro ao realizar o empréstimo.' });
     }
 }
-
-
 
 async function updateLoan(req, res) {
     const { cpf, title } = req.body;
@@ -118,9 +90,7 @@ async function deleteLoan(req, res) {
 
 module.exports = {
     getLoans,
-    getLoanById,
-    getLoanByCPF,
-    getLoanByTitle,
+    getLoanBySearch,
     postLoan,
     updateLoan,
     deleteLoan

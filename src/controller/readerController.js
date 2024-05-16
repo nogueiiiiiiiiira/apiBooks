@@ -1,8 +1,7 @@
 const {
     addReader,
     listReaders,
-    listReaderById,
-    listReaderByName,
+    listReaderBySearch,
     updateReaderService,
     deleteReaderService
 } = require("../service/readerService");
@@ -15,28 +14,16 @@ async function getReaders(req, res) {
     return res.status(204).send();
 } //OK
 
-async function getReaderById(req, res) {
-    const { readerId } = req.params;
-    if (!readerId) {
-        return res.status(400).json({ message: 'ID é obrigatório'});
+async function getReaderBySearch(req, res) {
+    const { readerSearch } = req.params;
+    if (!readerSearch) {
+        return res.status(400).json({ message: 'Inserção é obrigatória'});
     }
-    const result = await listReaderById(readerId);
-    if (result) {
-        return res.status(200).json(result);
-    }
-    return res.status(204).send();
-} //OK
-
-async function getReaderByName(req, res) {
-    const { readerName } = req.params;
-    if (!readerName) {
-        return res.status(400).json({ message: 'Nome do leitor é obrigatório'});
-    }
-    const result = await listReaderByName(readerName);
+    const result = await listReaderBySearch(readerSearch);
     if (result && result.length > 0) {
         return res.status(200).json(result);
     }
-    return res.status(404).json({ message: 'Nenhum leitor com este nome foi encontrado'});
+    return res.status(404).json({ message: 'Nada foi encontrado'});
 } //OK
 
 
@@ -108,8 +95,7 @@ async function deleteReader(req, res) {
 
 module.exports = {
     getReaders,
-    getReaderById,
-    getReaderByName,
+    getReaderBySearch,
     postReader,
     updateReader,
     deleteReader

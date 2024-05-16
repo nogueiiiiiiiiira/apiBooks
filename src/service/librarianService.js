@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function addLibrarian(nome, cpf, email, telefone, dataNasc) {
+async function addLibrarian(nome, cpf, email, telefone, dataNasc, senha) {
     return await prisma.librarian.create({
         data: {
             nome,
@@ -9,6 +9,7 @@ async function addLibrarian(nome, cpf, email, telefone, dataNasc) {
             email,
             telefone,
             dataNasc,
+            senha,
         }
     });
 }
@@ -17,25 +18,39 @@ async function listLibrarians() {
     return await prisma.librarian.findMany();
 }
 
-async function listLibrarianById(id) {
-    return await prisma.librarian.findUnique({
-        where: {
-            id: Number(id)
-        }
-    });
-}
-
-async function listLibrarianByName(nome) {
+async function listLibrarianBySearch(search) {
     return await prisma.librarian.findMany({
         where: {
-            nome: {
-                contains: nome
-            }
+            OR: [
+                {
+                    id: isNaN(search) ? undefined : Number(search) // Convertendo para número apenas se `search` for um número válido
+                },
+                {
+                    cpf: {
+                        contains: search
+                    }
+                },
+                {
+                    email: {
+                        contains: search
+                    }
+                },
+                {
+                    telefone: {
+                        contains: search
+                    }
+                },
+                {
+                    senha: {
+                        contains: search
+                    }
+                }
+            ]
         }
     });
 }
 
-async function updateLibrarianService(id, nome, cpf, email, telefone, dataNasc) {
+async function updateLibrarianService(id, nome, cpf, email, telefone, dataNasc, senha) {
     return await prisma.librarian.update({
         where: {
             id: Number(id)
@@ -46,6 +61,7 @@ async function updateLibrarianService(id, nome, cpf, email, telefone, dataNasc) 
             email,
             telefone,
             dataNasc,
+            senha,
         }
     });
 }
@@ -61,8 +77,7 @@ async function deleteLibrarianService(id) {
 module.exports = {
     addLibrarian,
     listLibrarians,
-    listLibrarianById,
-    listLibrarianByName,
+    listLibrarianBySearch,
     updateLibrarianService,
     deleteLibrarianService
 };

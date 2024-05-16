@@ -7,6 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//npx prisma migrate dev
+//prisma db push
+
 model Book {
   id Int @id @default(autoincrement())
   nome String
@@ -23,6 +26,7 @@ model Librarian {
   email String
   telefone String
   dataNasc DateTime
+  senha String
 }
 
 model Loan {
@@ -31,4 +35,13 @@ model Loan {
   title String
   dataEmp DateTime
   dataDev DateTime
+}
+
+model Reader {
+  id Int @id @default(autoincrement())
+  nome String
+  cpf String
+  email String
+  telefone String
+  dataNasc DateTime
 }

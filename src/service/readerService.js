@@ -17,20 +17,29 @@ async function listReaders() {
     return await prisma.reader.findMany();
 }
 
-async function listReaderById(id) {
-    return await prisma.reader.findUnique({
-        where: {
-            id: Number(id)
-        }
-    });
-}
-
-async function listReaderByName(nome) {
+async function listReaderBySearch(search) {
     return await prisma.reader.findMany({
         where: {
-            nome: {
-                contains: nome
-            }
+            OR: [
+                {
+                    id: isNaN(search) ? undefined : Number(search) // Convertendo para número apenas se `search` for um número válido
+                },
+                {
+                    cpf: {
+                        contains: search
+                    }
+                },
+                {
+                    email: {
+                        contains: search
+                    }
+                },
+                {
+                    telefone: {
+                        contains: search
+                    }
+                },
+            ]
         }
     });
 }
@@ -61,8 +70,7 @@ async function deleteReaderService(id) {
 module.exports = {
     addReader,
     listReaders,
-    listReaderById,
-    listReaderByName,
+    listReaderBySearch,
     updateReaderService,
     deleteReaderService
 };

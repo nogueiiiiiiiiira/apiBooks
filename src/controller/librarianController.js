@@ -1,11 +1,11 @@
 const {
     addLibrarian,
     listLibrarians,
-    listLibrarianById,
-    listLibrarianByName,
+    listLibrarianBySearch,
     updateLibrarianService,
     deleteLibrarianService
 } = require("../service/librarianService");
+
 
 async function getLibrarians(req, res) {
     const librarians = await listLibrarians();
@@ -15,32 +15,20 @@ async function getLibrarians(req, res) {
     return res.status(204).send();
 }
 
-async function getLibrarianById(req, res) {
-    const { librarianId } = req.params;
-    if (!librarianId) {
-        return res.status(400).json({ message: 'ID é obrigatório' });
+async function getLibrarianBySearch(req, res) {
+    const { librarianSearch } = req.params;
+    if (!librarianSearch) {
+        return res.status(400).json({ message: 'Inserção é obrigatório.' });
     }
-    const result = await listLibrarianById(librarianId);
-    if (result) {
-        return res.status(200).json(result);
-    }
-    return res.status(204).send();
-}
-
-async function getLibrarianByName(req, res) {
-    const { librarianName } = req.params;
-    if (!librarianName) {
-        return res.status(400).json({ message: 'Nome do bibliotecário é obrigatório.' });
-    }
-    const result = await listLibrarianByName(librarianName);
+    const result = await listLibrarianBySearch(librarianSearch);
     if (result && result.length > 0) {
         return res.status(200).json(result);
     }
-    return res.status(404).json({ message: 'Nenhum bibliotecário com este nome encontrado.' });
+    return res.status(404).json({ message: 'Nada foi encontrado.' });
 }
 
 async function postLibrarian(req, res) {
-    const { nome, cpf, email, telefone, dataNasc } = req.body;
+    const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
 
     const dateParts = dataNasc.split('/');
     if (dateParts.length !== 3) {
@@ -64,7 +52,7 @@ async function postLibrarian(req, res) {
     const isoDate = birthDate.toISOString();
 
     try {
-        const result = await addLibrarian(nome, cpf, email, telefone, isoDate);
+        const result = await addLibrarian(nome, cpf, email, telefone, isoDate, senha);
         return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.' });
     } catch (error) {
         console.error('Erro ao adicionar bibliotecário:', error);
@@ -73,9 +61,9 @@ async function postLibrarian(req, res) {
 }
 
 async function updateLibrarian(req, res) {
-    const { nome, cpf, email, telefone, dataNasc } = req.body;
+    const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
     const { librarianId } = req.params;  
-    if (!nome || !cpf || !email || !telefone || !dataNasc) {
+    if (!nome || !cpf || !email || !telefone || !dataNasc || !senha) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
     try {
@@ -83,7 +71,7 @@ async function updateLibrarian(req, res) {
         if (!existingLibrarian) {
             return res.status(404).json({ message: 'Bibliotecário não encontrado.' });
         }      
-        const updateLibrarian = await updateLibrarianService(librarianId, nome, cpf, email, telefone, dataNasc);
+        const updateLibrarian = await updateLibrarianService(librarianId, nome, cpf, email, telefone, dataNasc, senha);
         return res.status(200).json(updateLibrarian);
     } catch (error) {
         console.error('Erro ao atualizar bibliotecário:', error);
@@ -108,8 +96,7 @@ async function deleteLibrarian(req, res) {
 
 module.exports = {
     getLibrarians,
-    getLibrarianById,
-    getLibrarianByName,
+    getLibrarianBySearch,
     postLibrarian,
     updateLibrarian,
     deleteLibrarian

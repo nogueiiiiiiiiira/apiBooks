@@ -1,8 +1,7 @@
 const {
     addBook,
     listBooks,
-    listBookById,
-    listBookByName,
+    listBookBySearch,
     updateBookService,
     deleteBookService
 } = require("../service/bookService");
@@ -15,28 +14,16 @@ async function getBooks(req, res) {
     return res.status(204).send();
 }
 
-async function getBookById(req, res) {
-    const { bookId } = req.params;
-    if (!bookId) {
-        return res.status(400).json({ message: 'ID é obrigatório' });
+async function getBookBySearch(req, res) {
+    const { bookSearch } = req.params;
+    if (!bookSearch) {
+        return res.status(400).json({ message: 'Inserção é obrigatória.' });
     }
-    const result = await listBookById(bookId);
-    if (result) {
-        return res.status(200).json(result);
-    }
-    return res.status(204).send();
-}
-
-async function getBookByName(req, res) {
-    const { bookName } = req.params;
-    if (!bookName) {
-        return res.status(400).json({ message: 'Nome do livro é obrigatório.' });
-    }
-    const result = await listBookByName(bookName);
+    const result = await listBookBySearch(bookSearch);
     if (result && result.length > 0) {
         return res.status(200).json(result);
     }
-    return res.status(404).json({ message: 'Nenhum livro com este nome encontrado.' });
+    return res.status(404).json({ message: 'Nada foi encontrado.' });
 }
 
 async function postBook(req, res) {
@@ -92,8 +79,7 @@ async function deleteBook(req, res) {
 
 module.exports = {
     getBooks,
-    getBookById,
-    getBookByName,
+    getBookBySearch,
     postBook,
     updateBook,
     deleteBook

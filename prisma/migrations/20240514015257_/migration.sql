@@ -16,4 +16,4 @@ CREATE TABLE "Librarian" (
     "email" TEXT NOT NULL,
     "telefone" TEXT NOT NULL,
     "dataNasc" DATETIME NOT NULL
-);
+    );
