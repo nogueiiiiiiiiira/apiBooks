@@ -29,37 +29,45 @@ async function getLibrarianBySearch(req, res) {
 
 async function postLibrarian(req, res) {
     const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
-
+  
     const dateParts = dataNasc.split('/');
     if (dateParts.length !== 3) {
-        return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
+      return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
     }
-
+  
     const day = parseInt(dateParts[0]);
     const month = parseInt(dateParts[1]) - 1;
     const year = parseInt(dateParts[2]);
-
+  
     const isValidDate = !isNaN(day) && !isNaN(month) && !isNaN(year);
     if (!isValidDate) {
-        return res.status(400).json({ message: 'Data de nascimento inválida.' });
+      return res.status(400).json({ message: 'Data de nascimento inválida.' });
     }
-
+  
     const birthDate = new Date(year, month, day);
     if (isNaN(birthDate.getTime())) {
-        return res.status(400).json({ message: 'Data de nascimento inválida.' });
+      return res.status(400).json({ message: 'Data de nascimento inválida.' });
     }
-
+  
     const isoDate = birthDate.toISOString();
-
+  
     try {
-        const result = await addLibrarian(nome, cpf, email, telefone, isoDate, senha);
-        return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.' });
+      await addLibrarian(nome, cpf, email, telefone, isoDate, senha);
+      return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.' });
     } catch (error) {
-        console.error('Erro ao adicionar bibliotecário:', error);
-        return res.status(500).json({ message: 'Erro ao adicionar bibliotecário.' });
+      console.error('Erro ao adicionar bibliotecário:', error);
+      if (error.message === 'CPF já existe!') {
+        return res.status(400).json({ message: error.message });
+      }
+      if (error.message === 'Email já existe!') {
+        return res.status(400).json({ message: error.message });
+      }
+      if (error.message === 'Telefone já existe!') {
+        return res.status(400).json({ message: error.message });
+      }
+      return res.status(500).json({ message: 'Erro ao adicionar bibliotecário.' });
     }
-}
-
+  }
 async function updateLibrarian(req, res) {
     const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
     const { librarianId } = req.params;  

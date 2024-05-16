@@ -31,24 +31,21 @@ async function getLoanBySearch(req, res) {
 async function postLoan(req, res) {
     const { cpf, title } = req.body;
     if (!cpf || !title) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
-
+  
     const dateEmp = new Date();
     const dateDev = new Date();
     dateDev.setDate(dateDev.getDate() + 7);
-
-    const isoDateEmp = dateEmp.toISOString();
-    const isoDateDev = dateDev.toISOString();
-
+  
     try {
-        const result = await addLoan(cpf, title, isoDateEmp, isoDateDev);
-        return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
+      await addLoan(cpf, title, dateEmp, dateDev, res);
+      return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
     } catch (error) {
-        console.error('Erro ao realizar o empréstimo:', error);
-        return res.status(500).json({ message: 'Erro ao realizar o empréstimo.' });
+      console.error('Erro ao realizar o empréstimo:', error);
+      return res.status(500).json({ message: 'Erro ao realizar o empréstimo.' });
     }
-}
+  }
 
 async function updateLoan(req, res) {
     const { cpf, title } = req.body;

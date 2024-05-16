@@ -1,7 +1,37 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function addBook(nome, descricao, autor, valor, categoria) {
+async function bookExists(title, autor, categoria) {
+    const books = await prisma.book.findMany({
+        where: {
+            AND: [
+                {
+                    nome: {
+                        contains: title
+                    }
+                },
+                {
+                    autor: {
+                        contains: autor
+                    }
+                },
+                {
+                    categoria: {
+                        contains: categoria
+                    }
+                }
+            ]
+    
+            }
+        })
+    }
+
+async function addBook(nome, descricao, autor, valor, categoria, estoque) {
+
+    if(await bookExists(nome, autor, categoria)){
+        throw new Error('Esse livro já existe!')
+    }
+
     return await prisma.book.create({
         data: {
             nome,
@@ -9,6 +39,7 @@ async function addBook(nome, descricao, autor, valor, categoria) {
             autor,
             valor,
             categoria,
+            estoque,
         }
     });
 }
@@ -54,7 +85,7 @@ async function listBookBySearch(search) {
     });
 }
 
-async function updateBookService(id, nome, descricao, autor, valor, categoria) {
+async function updateBookService(id, nome, descricao, autor, valor, categoria, estoque) {
     return await prisma.book.update({
         where: {
             id: Number(id)
@@ -65,6 +96,7 @@ async function updateBookService(id, nome, descricao, autor, valor, categoria) {
             autor,
             valor,
             categoria,
+            estoque,
         }
     });
 }

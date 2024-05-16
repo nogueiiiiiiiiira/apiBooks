@@ -17,6 +17,7 @@ model Book {
   autor String
   valor String
   categoria String
+  estoque Int
 }
 
 model Librarian {
