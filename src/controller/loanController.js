@@ -5,8 +5,10 @@ const {
     listLoans,
     listLoanBySearch,
     updateLoanService,
-    deleteLoanService
-} = require("../service/loanService");
+    deleteLoanService,
+    listLoanById,
+} = require("../service/loanService"); 
+
 
 async function getLoans(req, res) {
     const loans = await listLoans();
@@ -29,8 +31,9 @@ async function getLoanBySearch(req, res) {
 }
 
 async function postLoan(req, res) {
-    const { cpf, title } = req.body;
-    if (!cpf || !title) {
+    const { cpf, idLivro } = req.body;
+
+    if (!cpf || !idLivro) {
       return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
   
@@ -39,29 +42,34 @@ async function postLoan(req, res) {
     dateDev.setDate(dateDev.getDate() + 7);
   
     try {
-      await addLoan(cpf, title, dateEmp, dateDev, res);
-      return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
+        await addLoan(cpf, idLivro, dateEmp, dateDev);
+        return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
     } catch (error) {
-      console.error('Erro ao realizar o empréstimo:', error);
+      if(error.message === 'Livro não encontrado no banco de dados. Não foi possível realizar o empréstimo'){
+        await idExists(idLivro);
+        return res.status(400).json({ message: error.message });
+      }
+      if(error.message === 'Não há estoque suficiente para realizar o empréstimo'){
+        return res.status(400).json({ message: error.message });
+      }
       return res.status(500).json({ message: 'Erro ao realizar o empréstimo.' });
     }
   }
 
 async function updateLoan(req, res) {
-    const { cpf, title } = req.body;
+    const { cpf, idLivro } = req.body;
     const { loanId } = req.params;
     
-    if (!cpf || !title) {
+    if (!cpf || !idLivro) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
     
     try {
-        const existingLoan = await listLoanById(loanId);
-        if (!existingLoan) {
+        const existingLoan = await listLoanById(Number(loanId));        if (!existingLoan) {
             return res.status(404).json({ message: 'Empréstimo não encontrado.' });
         }
         
-        const updatedLoan = await updateLoanService(loanId, cpf, title);
+        const updatedLoan = await updateLoanService(loanId, cpf, idLivro);
         return res.status(200).json(updatedLoan);
     } catch (error) {
         console.error('Erro ao atualizar o empréstimo:', error);
@@ -72,7 +80,7 @@ async function updateLoan(req, res) {
 async function deleteLoan(req, res) {
     const { loanId } = req.params;
     try {
-        const existingLoan = await listLoanById(loanId); // Corrigido para listLoanById
+        const existingLoan = await listLoanById(loanId);
         if (!existingLoan) {
             return res.status(404).json({ message: 'Empréstimo não encontrado.' });
         }

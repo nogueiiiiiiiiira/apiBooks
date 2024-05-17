@@ -61,6 +61,14 @@ async function listLibrarians() {
     return await prisma.librarian.findMany();
 }
 
+async function listLibrarianById(id) {
+  return await prisma.Librarian.findUnique({
+      where: {
+          id: Number(id)
+      }
+  });
+} //OK
+
 async function listLibrarianBySearch(search) {
     return await prisma.librarian.findMany({
         where: {
@@ -122,5 +130,6 @@ module.exports = {
     listLibrarians,
     listLibrarianBySearch,
     updateLibrarianService,
-    deleteLibrarianService
+    deleteLibrarianService,
+    listLibrarianById
 };

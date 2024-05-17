@@ -14,78 +14,98 @@ async function cpfExists(cpf) {
     return readers.length > 0;
   }
 
-  async function titleExists(title) {
+  async function idExists(idLivro) {
     const books = await prisma.book.findMany({
       where: {
-        nome: {
-          equals: title,
-        },
-      },
+        id: Number(idLivro)
+      }
     });
   
     return books.length > 0;
   }
 
-  async function addLoan(cpf, title, dataEmp, dataDev, res) {
-    if (!await cpfExists(cpf)) {
-      return res.status(400).json({ message: 'CPF não foi encontrado no banco de dados. Não foi possível realizar o empréstimo' });
-    }
-  
-    if (!await titleExists(title)) {
-      return res.status(400).json({ message: 'Título não foi encontrado no banco de dados. Não foi possível realizar o empréstimo' });
-    }
-  
-    // Find the book by title and update its stock
-    const book = await prisma.book.findUnique({
+  async function updateStock(idLivro, quantidade) {
+    const existingBook = await prisma.book.findFirst({
       where: {
-        nome: title,
-      },
+        id: Number(idLivro)
+      }
     });
   
-    if (!book) {
-      return res.status(400).json({ message: 'Livro não encontrado no banco de dados. Não foi possível realizar o empréstimo' });
+    if (!existingBook) {
+      throw new Error('Livro não encontrado.');
     }
   
-    if (book.stock <= 0) {
-      return res.status(400).json({ message: 'Não há estoque suficiente para realizar o empréstimo' });
+    const currentStock = parseInt(existingBook.estoque);
+  
+    if (currentStock <= 0) {
+      throw new Error('Não há estoque suficiente para realizar o empréstimo');
     }
   
-    // Decrease the stock by 1
-    const updatedBook = await prisma.book.update({
+    const updatedStock = currentStock - quantidade;
+    await prisma.book.update({
       where: {
-        id: book.id,
+        id: Number(existingBook.id)
       },
       data: {
-        estoque: book.estoque - 1,
-      },
-    });
-  
-    // Create the loan
-    return await prisma.loan.create({
-      data: {
-        cpf,
-        title,
-        dataEmp,
-        dataDev,
-      },
+        estoque: updatedStock.toString()
+      }
     });
   }
+async function addLoan(cpf, idLivro, dataEmp, dataDev) {
+  if (!await cpfExists(cpf)) {
+    throw new Error('CPF não foi encontrado no banco de dados. Não foi possível realizar o empréstimo');
+  }
 
+  if (!await idExists(idLivro)) {
+    throw new Error('Livro não foi encontrado no banco de dados. Não foi possível realizar o empréstimo');
+  }
+
+  const book = await prisma.book.findUnique({
+    where: {
+      id: Number(idLivro),
+    },
+  });
+
+  if (!book) {
+    throw new Error('Livro não encontrado no banco de dados. Não foi possível realizar o empréstimo');
+  }
+
+  if (book.estoque <= 0) {
+    throw new Error('Não há estoque suficiente para realizar o empréstimo');
+  }
+
+  await updateStock(idLivro, 1);
+
+  return await prisma.loan.create({
+    data: {
+      cpf,
+      idLivro,
+      dataEmp,
+      dataDev,
+    },
+  });
+}
 async function listLoans() {
     return await prisma.loan.findMany();
 }
+
+async function listLoanById(id) {
+  return await prisma.loan.findUnique({
+      where: {
+          id: Number(id)
+      }
+  });
+} //OK
 
 async function listLoanBySearch(search) {
     return await prisma.loan.findMany({
         where: {
             OR: [
                 {
-                    id: isNaN(search) ? undefined : Number(search) // Convertendo para número apenas se `search` for um número válido
+                    id: isNaN(search) ? undefined : Number(search)
                 },
                 {
-                    title: {
-                        contains: search
-                    }
+                    idLivro: Number(search)
                 },
                 {
                     cpf: {
@@ -97,16 +117,16 @@ async function listLoanBySearch(search) {
     });
 }
 
-async function updateLoanService(id, cpf, title) {
-    return await prisma.loan.update({
-        where: {
-            id: Number(id)
-        },
-        data: {
-            cpf,
-            title,
-        }
-    });
+async function updateLoanService(id, cpf, idLivro) {
+  return await prisma.loan.update({
+      where: {
+          id: Number(id)
+      },
+      data: {
+          cpf,
+          idLivro,
+      }
+  });
 }
 
 async function deleteLoanService(id) {
@@ -122,5 +142,7 @@ module.exports = {
     listLoans,
     listLoanBySearch,
     updateLoanService,
-    deleteLoanService
+    deleteLoanService,
+    listLoanById,
+    updateStock
 };

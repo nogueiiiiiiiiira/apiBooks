@@ -1,6 +1,8 @@
 const {
     addBook,
+    updateStock,
     listBooks,
+    listBookById,
     listBookBySearch,
     updateBookService,
     deleteBookService
@@ -28,15 +30,22 @@ async function getBookBySearch(req, res) {
 
 async function postBook(req, res) {
     const { nome, descricao, autor, valor, categoria, estoque } = req.body;
+
     if (!nome || !descricao || !autor || !valor || !categoria || !estoque) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
 
-    const result = await addBook(nome, descricao, autor, valor, categoria, estoque);
-    if (result) {
+    try{
+        await addBook(nome, descricao, autor, valor, categoria, estoque);
         return res.status(201).json({ message: 'Livro adicionado com sucesso.' });
     }
-    return res.status(500).json({ message: 'Erro ao adicionar o Livro.' });
+    catch(error){
+        if(error.message === 'Esse livro já existe! Livro adicionado ao estoque!'){
+            await updateStock(nome, autor, categoria, estoque);
+            return res.status(200).json({ message: 'Livro já existe! Estoque foi atualizado!' });
+        }
+        return res.status(500).json({ message: 'Erro ao adicionar o Livro.' });
+    }
 }
 
 async function updateBook(req, res) {
@@ -48,7 +57,7 @@ async function updateBook(req, res) {
     }
     
     try {
-        const existingBook = await listBookById(bookId); // Corrigido para listBookById
+        const existingBook = await listBookById(bookId); 
         if (!existingBook) {
             return res.status(404).json({ message: 'Livro não encontrado.' });
         }

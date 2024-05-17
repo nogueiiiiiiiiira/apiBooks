@@ -1,6 +1,7 @@
 const {
     addLibrarian,
     listLibrarians,
+    listLibrarianById,
     listLibrarianBySearch,
     updateLibrarianService,
     deleteLibrarianService

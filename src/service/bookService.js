@@ -7,45 +7,82 @@ async function bookExists(title, autor, categoria) {
             AND: [
                 {
                     nome: {
-                        contains: title
+                        equals: title
                     }
                 },
                 {
                     autor: {
-                        contains: autor
+                        equals: autor
                     }
                 },
                 {
                     categoria: {
-                        contains: categoria
+                        equals: categoria
                     }
                 }
             ]
     
             }
-        })
+        });
+
+        return books.length > 0;
     }
 
-async function addBook(nome, descricao, autor, valor, categoria, estoque) {
-
-    if(await bookExists(nome, autor, categoria)){
-        throw new Error('Esse livro já existe!')
-    }
-
-    return await prisma.book.create({
-        data: {
-            nome,
-            descricao,
-            autor,
-            valor,
-            categoria,
-            estoque,
+    async function updateStock(nome, autor, categoria, quantidade) {
+        const existingBook = await prisma.book.findFirst({
+            where: {
+                AND: [
+                    { nome: { equals: nome } },
+                    { autor: { equals: autor } },
+                    { categoria: { equals: categoria } }
+                ]
+            }
+        });
+    
+        if (!existingBook) {
+            throw new Error('Livro não encontrado.');
         }
-    });
-}
+    
+        const currentStock = parseInt(existingBook.estoque); 
+        const updatedStock = currentStock + parseInt(quantidade); 
+        await prisma.book.update({
+            where: {
+                id: existingBook.id
+            },
+            data: {
+                estoque: updatedStock.toString()
+            }
+        }); 
+    }
+    
+    async function addBook(nome, descricao, autor, valor, categoria, estoque) {
+
+        if(await bookExists(nome, autor, categoria)){
+            throw new Error('Esse livro já existe! Livro adicionado ao estoque!');
+        }
+    
+        return await prisma.book.create({
+            data: {
+                nome,
+                descricao,
+                autor,
+                valor,
+                categoria,
+                estoque,
+            }
+        });
+    }
 
 async function listBooks() {
     return await prisma.book.findMany();
+}
+
+async function listBookById(id) {
+    return await prisma.book.findUnique({
+        where: {
+            id: Number(id)
+        }
+    });
 }
 
 async function listBookBySearch(search) {
@@ -114,5 +151,7 @@ module.exports = {
     listBooks,
     listBookBySearch,
     updateBookService,
-    deleteBookService
+    deleteBookService,
+    updateStock,
+    listBookById
 };

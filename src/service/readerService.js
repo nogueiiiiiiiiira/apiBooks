@@ -17,6 +17,14 @@ async function listReaders() {
     return await prisma.reader.findMany();
 }
 
+async function listReaderById(id) {
+    return await prisma.reader.findUnique({
+        where: {
+            id: Number(id)
+        }
+    });
+}
+
 async function listReaderBySearch(search) {
     return await prisma.reader.findMany({
         where: {
@@ -72,5 +80,6 @@ module.exports = {
     listReaders,
     listReaderBySearch,
     updateReaderService,
-    deleteReaderService
+    deleteReaderService,
+    listReaderById
 };

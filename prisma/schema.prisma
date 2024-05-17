@@ -17,7 +17,7 @@ model Book {
   autor String
   valor String
   categoria String
-  estoque Int
+  estoque String
 }
 
 model Librarian {
@@ -33,7 +33,7 @@ model Librarian {
 model Loan {
   id Int @id @default(autoincrement())
   cpf String
-  title String
+  idLivro Int
   dataEmp DateTime
   dataDev DateTime
 }
