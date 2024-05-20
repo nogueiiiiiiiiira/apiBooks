@@ -3,6 +3,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+//verificar se o cpf de leitor existe
 async function cpfExists(cpf) {
     const readers = await prisma.reader.findMany({
       where: {
@@ -15,6 +16,7 @@ async function cpfExists(cpf) {
     return readers.length > 0;
   }
 
+  //verificar se o id do livro existe
   async function idExists(idLivro) {
     const book = await prisma.book.findUnique({
         where: {
@@ -25,6 +27,7 @@ async function cpfExists(cpf) {
     return book !== null && book !== undefined;
 }
 
+//realizar um empréstimo
 async function addLoan(cpf, idLivro, dataEmp, dataDev) {
   
     if (!await cpfExists(cpf)) {
@@ -50,6 +53,7 @@ async function addLoan(cpf, idLivro, dataEmp, dataDev) {
     });
 }
 
+//atualizar o estoque de livros quando o mesmo for emprestado
 async function updateStock(idLivro) {
     const existingBook = await prisma.book.findUnique({
         where: {
@@ -80,10 +84,13 @@ async function updateStock(idLivro) {
     return true; 
 }
 
+
+//buscar todos os empréstimos
 async function listLoans() {
     return await prisma.loan.findMany();
 }
 
+//buscar empréstimo por id
 async function listLoanById(id) {
   return await prisma.loan.findUnique({
       where: {
@@ -92,6 +99,7 @@ async function listLoanById(id) {
   });
 } //OK
 
+//buscar empréstimo por cpf ou idLivro
 async function listLoanBySearch(search) {
     return await prisma.loan.findMany({
         where: {
@@ -112,6 +120,7 @@ async function listLoanBySearch(search) {
     });
 }
 
+//atualizar os dados do empréstimo
 async function updateLoanService(id, cpf, idLivro) {
   return await prisma.loan.update({
       where: {
@@ -124,6 +133,7 @@ async function updateLoanService(id, cpf, idLivro) {
   });
 }
 
+//excluir o empréstimo
 async function deleteLoanService(id) {
     return await prisma.loan.delete({
         where: {
