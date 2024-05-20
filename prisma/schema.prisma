@@ -33,7 +33,7 @@ model Librarian {
 model Loan {
   id Int @id @default(autoincrement())
   cpf String
-  idLivro Int
+  idLivro String
   dataEmp DateTime
   dataDev DateTime
 }

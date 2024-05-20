@@ -26,7 +26,7 @@ async function getLoanBySearch(req, res) {
     const result = await listLoanBySearch(loanSearch);
     if (result && result.length > 0) {
         return res.status(200).json(result);
-    }
+}
     return res.status(404).json({ message: 'Nada foi encontrado.' });
 }
 
@@ -45,11 +45,14 @@ async function postLoan(req, res) {
         await addLoan(cpf, idLivro, dateEmp, dateDev);
         return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
     } catch (error) {
-      if(error.message === 'Livro não encontrado no banco de dados. Não foi possível realizar o empréstimo'){
-        await idExists(idLivro);
+      if(error.message === 'Livro não foi encontrado no banco de dados. Não foi possível realizar o empréstimo'){
         return res.status(400).json({ message: error.message });
       }
       if(error.message === 'Não há estoque suficiente para realizar o empréstimo'){
+        return res.status(400).json({ message: error.message });
+      }
+
+      if(error.message === 'CPF não foi encontrado no banco de dados. Não foi possível realizar o empréstimo'){
         return res.status(400).json({ message: error.message });
       }
       return res.status(500).json({ message: 'Erro ao realizar o empréstimo.' });
@@ -65,7 +68,8 @@ async function updateLoan(req, res) {
     }
     
     try {
-        const existingLoan = await listLoanById(Number(loanId));        if (!existingLoan) {
+        const existingLoan = await listLoanById(Number(loanId));        
+        if (!existingLoan) {
             return res.status(404).json({ message: 'Empréstimo não encontrado.' });
         }
         
@@ -91,7 +95,6 @@ async function deleteLoan(req, res) {
         return res.status(500).json({ message: 'Erro interno do servidor.' });
     }
 }
-
 
 module.exports = {
     getLoans,
