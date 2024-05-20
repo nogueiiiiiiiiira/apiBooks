@@ -49,13 +49,23 @@ async function postReader(req, res) {
     const isoDate = birthDate.toISOString();
 
     try {
-        const result = await addReader(nome, cpf, email, telefone, isoDate);
+        await addReader(nome, cpf, email, telefone, isoDate);
         return res.status(201).json({ message: 'Leitor adicionado com sucesso.' });
     } catch (error) {
-        console.error('Erro ao adicionar Leitor:', error);
-        return res.status(500).json({ message: 'Erro ao adicionar Leitor.' });
+
+        if (error.message === 'CPF já existe!') {
+            return res.status(400).json({ message: error.message });
+          }
+          if (error.message === 'Email já existe!') {
+            return res.status(400).json({ message: error.message });
+          }
+          if (error.message === 'Telefone já existe!') {
+            return res.status(400).json({ message: error.message });
+          }
+
+          return res.status(500).json({ message: 'Erro ao adicionar leitor.' });
     }
-} //OK
+} 
 
 async function updateReader(req, res) {
     const { nome, cpf, email, telefone, dataNasc } = req.body;

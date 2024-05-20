@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// verificando se o livro existe, buscando pelo titulo, autor e categoria.
 async function bookExists(title, autor, categoria) {
     const books = await prisma.book.findMany({
         where: {
@@ -28,6 +29,7 @@ async function bookExists(title, autor, categoria) {
         return books.length > 0;
     }
 
+    //atualizando o estoque de livros, que será chamado no bookController, para adicionar mais livros se determinado livro já existir de acordo com o titulo, autor e categoria
     async function updateStock(nome, autor, categoria, quantidade) {
         const existingBook = await prisma.book.findFirst({
             where: {
@@ -54,7 +56,9 @@ async function bookExists(title, autor, categoria) {
             }
         }); 
     }
-    
+
+
+    //adicionar livro no banco
     async function addBook(nome, descricao, autor, valor, categoria, estoque) {
 
         if(await bookExists(nome, autor, categoria)){
@@ -73,10 +77,12 @@ async function bookExists(title, autor, categoria) {
         });
     }
 
+//listar os livros 
 async function listBooks() {
     return await prisma.book.findMany();
 }
 
+//listar livro pelo id
 async function listBookById(id) {
     return await prisma.book.findUnique({
         where: {
@@ -85,6 +91,7 @@ async function listBookById(id) {
     });
 }
 
+//listar livro pelo titulo, autor e categoria, descricao, valor e descricao
 async function listBookBySearch(search) {
     return await prisma.book.findMany({
         where: {
@@ -122,6 +129,7 @@ async function listBookBySearch(search) {
     });
 }
 
+//atualizar os dados do livro pelo id
 async function updateBookService(id, nome, descricao, autor, valor, categoria, estoque) {
     return await prisma.book.update({
         where: {
@@ -138,6 +146,7 @@ async function updateBookService(id, nome, descricao, autor, valor, categoria, e
     });
 }
 
+//deletar o livro pelo id
 async function deleteBookService(id) {
     return await prisma.book.delete({
         where: {

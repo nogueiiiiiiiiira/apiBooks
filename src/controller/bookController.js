@@ -73,7 +73,7 @@ async function updateBook(req, res) {
 async function deleteBook(req, res) {
     const { bookId } = req.params;
     try {
-        const existingBook = await listBookById(bookId); // Corrigido para listBookById
+        const existingBook = await listBookById(bookId); 
         if (!existingBook) {
             return res.status(404).json({ message: 'Livro não encontrado.' });
         }
