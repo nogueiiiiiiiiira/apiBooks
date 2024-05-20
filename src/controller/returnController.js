@@ -59,13 +59,14 @@ async function postReturn(req, res) {
       await updateStock(idLivro);
       return res.status(201).json({ message: 'Devolução realizada com sucesso.' });
     } catch (error) {
-      if (error.message === 'Livro não existe! Não foi possível realizar a devolução') {
-        return res.status(400).json({ message: error.message });
-      }
-  
-      if (error.message === 'CPF não existe! Não foi possível realizar a devolução') {
-        return res.status(400).json({ message: error.message });
-      }
+        if (error.message.includes('CPF não existe')) {
+            return res.status(400).json({ message: error.message });
+         }
+
+         if (error.message.includes('Livro não existe')) { 
+            return res.status(400).json({ message: error.message });
+
+          }
   
       return res.status(500).json({ message: 'Erro ao realizar a devolução.' });
     }
