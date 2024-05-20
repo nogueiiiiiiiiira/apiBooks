@@ -57,4 +57,18 @@ router.post('/reader', postReader);
 router.put('/reader/:readerId', updateReader);
 router.delete('/reader/:readerId', deleteReader);
 
+const {
+    getReturns,
+    getReturnBySearch,
+    postReturn,
+    updateReturn,
+    deleteReturn
+} = require('./returnController.js');
+
+router.get('/returns', getReturns);
+router.get('/readerSearch/:returnSearch', getReturnBySearch);
+router.post('/return', postReturn);
+router.put('/return/:returnId', updateReturn);
+router.delete('/return/:returnId', deleteReturn);
+
 module.exports = router;

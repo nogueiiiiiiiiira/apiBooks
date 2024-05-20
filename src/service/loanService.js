@@ -97,7 +97,7 @@ async function listLoanById(id) {
           id: Number(id)
       }
   });
-} //OK
+} 
 
 //buscar empréstimo por cpf ou idLivro
 async function listLoanBySearch(search) {
@@ -147,6 +147,7 @@ module.exports = {
     listLoans,
     listLoanBySearch,
     updateLoanService,
-    deleteLoanService,listLoanById,
+    deleteLoanService,
+    listLoanById,
     updateStock
 };

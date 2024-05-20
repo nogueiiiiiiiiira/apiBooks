@@ -46,3 +46,12 @@ model Reader {
   telefone String
   dataNasc DateTime
 }
+
+model Return {
+  id Int @id @default(autoincrement())
+  cpf String
+  idLivro String
+  prevDev DateTime
+  dataAtual DateTime
+  multaAtribuida String
+}
