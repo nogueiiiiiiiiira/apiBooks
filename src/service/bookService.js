@@ -97,7 +97,7 @@ async function listBookBySearch(search) {
         where: {
             OR: [
                 {
-                    id: Number(search)
+                    id: isNaN(search) ? undefined : Number(search) // Convertendo para número apenas se `search` for um número válido
                 },
                 {
                     nome: {
