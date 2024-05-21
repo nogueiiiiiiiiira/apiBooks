@@ -111,6 +111,11 @@ async function listReaderBySearch(search) {
                     id: isNaN(search) ? undefined : Number(search) 
                 },
                 {
+                  nome: {
+                    contains: search
+                  }
+                },
+                {
                     cpf: {
                         contains: search
                     }

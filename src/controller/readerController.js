@@ -1,6 +1,7 @@
 const {
     addReader,
     listReaders,
+    listReaderById,
     listReaderBySearch,
     updateReaderService,
     deleteReaderService
@@ -88,7 +89,7 @@ async function updateReader(req, res) {
         const birthDate = new Date(dataNasc);
         const isoDate = birthDate.toISOString();
         const updateReader = await updateReaderService(readerId, nome, cpf, email, telefone, isoDate);
-        await addHistoric('Atualização de leitor registrado');
+        await addHistoric('Atualização de leitor registrado', criadoEm);
         return res.status(200).json(updateReader);
     } catch (error) {
         console.error('Erro ao atualizar leitor:', error);
