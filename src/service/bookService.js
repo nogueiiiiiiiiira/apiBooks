@@ -59,7 +59,7 @@ async function bookExists(title, autor, categoria) {
 
 
     //adicionar livro no banco
-    async function addBook(nome, descricao, autor, valor, categoria, estoque, criadoEm) {
+    async function addBook(nome, descricao, autor, categoria, estoque, criadoEm) {
 
         if(await bookExists(nome, autor, categoria)){
             throw new Error('Esse livro já existe! Livro adicionado ao estoque!');
@@ -70,7 +70,6 @@ async function bookExists(title, autor, categoria) {
                 nome,
                 descricao,
                 autor,
-                valor,
                 categoria,
                 estoque,
                 criadoEm,
@@ -92,7 +91,7 @@ async function listBookById(id) {
     });
 }
 
-//listar livro pelo titulo, autor e categoria, descricao, valor e descricao
+//listar livro pelo titulo, autor e categoria, descricao e descricao
 async function listBookBySearch(search) {
     return await prisma.book.findMany({
         where: {
@@ -116,11 +115,6 @@ async function listBookBySearch(search) {
                     }
                 },
                 {
-                    valor: {
-                        contains: search
-                    }
-                },
-                {
                     categoria: {
                         contains: search
                     }
@@ -131,7 +125,7 @@ async function listBookBySearch(search) {
 }
 
 //atualizar os dados do livro pelo id
-async function updateBookService(id, nome, descricao, autor, valor, categoria, estoque) {
+async function updateBookService(id, nome, descricao, autor, categoria, estoque) {
     return await prisma.book.update({
         where: {
             id: Number(id)
@@ -140,7 +134,6 @@ async function updateBookService(id, nome, descricao, autor, valor, categoria, e
             nome,
             descricao,
             autor,
-            valor,
             categoria,
             estoque,
         }

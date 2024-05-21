@@ -7,6 +7,11 @@ const {
     deleteLibrarianService
 } = require("../service/librarianService");
 
+const {
+  addHistoric
+} = require ("../service/historicService");
+
+const criadoEm = new Date().toISOString().substring(0, 10);;
 
 async function getLibrarians(req, res) {
     const librarians = await listLibrarians();
@@ -50,11 +55,11 @@ async function postLibrarian(req, res) {
       return res.status(400).json({ message: 'Data de nascimento inválida.' });
     }
   
-    const isoDate = birthDate.toISOString();
-    const criadoEm = new Date();
+    const isoDate = birthDate.toISOString().substring(0, 10);
   
     try {
       await addLibrarian(nome, cpf, email, telefone, isoDate, senha, criadoEm);
+      await addHistoric('Cadastro de bibliotecário registado', criadoEm);
       return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.' });
     } catch (error) {
       console.error('Erro ao adicionar bibliotecário:', error);
@@ -70,7 +75,7 @@ async function postLibrarian(req, res) {
       return res.status(500).json({ message: 'Erro ao adicionar bibliotecário.' });
     }
   }
-  
+
 async function updateLibrarian(req, res) {
     const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
     const { librarianId } = req.params;  
@@ -78,11 +83,12 @@ async function updateLibrarian(req, res) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
     try {
-        const existingLibrarian = await listLibrariansById(bookId);
+        const existingLibrarian = await listLibrariansById(librarianId);
         if (!existingLibrarian) {
             return res.status(404).json({ message: 'Bibliotecário não encontrado.' });
         }      
         const updateLibrarian = await updateLibrarianService(librarianId, nome, cpf, email, telefone, dataNasc, senha);
+        await addHistoric('Atualização de bibliotecário registada', criadoEm);
         return res.status(200).json(updateLibrarian);
     } catch (error) {
         console.error('Erro ao atualizar bibliotecário:', error);
@@ -98,6 +104,7 @@ async function deleteLibrarian(req, res) {
             return res.status(404).json({ message: 'Bibliotecário não encontrado.' });
         }
         await deleteLibrarianService(librarianId);
+        await addHistoricalLibrarian('Exclusão de bibliotecário registada', criadoEm);
         return res.status(200).json({ message: 'Bibliotecário excluído com sucesso.' });
     } catch (error) {
         console.error('Erro ao excluir bibliotecário:', error);

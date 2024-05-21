@@ -6,6 +6,12 @@ const {
     deleteReaderService
 } = require("../service/readerService");
 
+const {
+    addHistoric
+} = require("../service/historicService.js");
+
+const criadoEm = new Date().toISOString().substring(0, 10);
+
 async function getReaders(req, res) {
     const readers = await listReaders();
     if (readers.length > 0) {
@@ -29,7 +35,6 @@ async function getReaderBySearch(req, res) {
 
 async function postReader(req, res) {
     const { nome, cpf, email, telefone, dataNasc} = req.body;
-    const criadoEm = new Date();
     const dateParts = dataNasc.split('/');
     if (dateParts.length !== 3) {
         return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
@@ -47,10 +52,11 @@ async function postReader(req, res) {
     if (isNaN(birthDate.getTime())) {
         return res.status(400).json({ message: 'Data de nascimento inválida.' });
     }
-    const isoDate = birthDate.toISOString();
+    const isoDate = birthDate.toISOString().substring(0, 10);
 
     try {
         await addReader(nome, cpf, email, telefone, isoDate, criadoEm);
+        await addHistoric('Cadastro de leitor registrado', criadoEm);
         return res.status(201).json({ message: 'Leitor adicionado com sucesso.' });
     } catch (error) {
 
@@ -82,6 +88,7 @@ async function updateReader(req, res) {
         const birthDate = new Date(dataNasc);
         const isoDate = birthDate.toISOString();
         const updateReader = await updateReaderService(readerId, nome, cpf, email, telefone, isoDate);
+        await addHistoric('Atualização de leitor registrado');
         return res.status(200).json(updateReader);
     } catch (error) {
         console.error('Erro ao atualizar leitor:', error);
@@ -97,6 +104,7 @@ async function deleteReader(req, res) {
             return res.status(404).json({ message: 'Leitor não encontrado.' });
         }
         await deleteReaderService(readerId);
+        await addHistoric('Exclusão de leitor registrado');
         return res.status(200).json({ message: 'Leitor excluído com sucesso.' });
     } catch (error) {
         console.error('Erro ao excluir leitor:', error);

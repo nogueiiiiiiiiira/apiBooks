@@ -15,10 +15,9 @@ model Book {
   nome String
   descricao String
   autor String
-  valor String
   categoria String
   estoque String
-  criadoEm DateTime
+  criadoEm String
 }
 
 model Librarian {
@@ -27,17 +26,17 @@ model Librarian {
   cpf String
   email String
   telefone String
-  dataNasc DateTime
+  dataNasc String
   senha String
-  criadoEm DateTime
+  criadoEm String
 }
 
 model Loan {
   id Int @id @default(autoincrement())
   cpf String
   idLivro String
-  dataEmp DateTime
-  dataDev DateTime
+  dataEmp String
+  dataDev String
 }
 
 model Reader {
@@ -46,16 +45,16 @@ model Reader {
   cpf String
   email String
   telefone String
-  dataNasc DateTime
-  criadoEm DateTime
+  dataNasc String
+  criadoEm String
 }
 
 model Return {
   id Int @id @default(autoincrement())
   cpf String
   idLivro String
-  prevDev DateTime
-  dataAtual DateTime
+  prevDev String
+  dataAtual String
   multaAtribuida String
 }
 
@@ -66,5 +65,11 @@ model Fine {
   diasAtra String
   total Float
   statusPag String
-  criadoEm DateTime
+  criadoEm String
+}
+
+model Historic {
+  id Int @id @default(autoincrement())
+  acao String
+  criadoEm String
 }

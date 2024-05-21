@@ -9,6 +9,11 @@ const {
     listLoanById,
 } = require("../service/loanService"); 
 
+const {
+    addHistoric
+} = require("../service/historicService");
+
+const criadoEm = new Date().toISOString().substring(0, 10);
 
 async function getLoans(req, res) {
     const loans = await listLoans();
@@ -43,6 +48,7 @@ async function postLoan(req, res) {
   
     try {
         await addLoan(cpf, idLivro, dateEmp, dateDev);
+        await addHistoric('Empréstimo registrado', criadoEm);
         return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
     } catch (error) {
       if(error.message === 'Livro não foi encontrado no banco de dados. Não foi possível realizar o empréstimo'){
@@ -74,6 +80,7 @@ async function updateLoan(req, res) {
         }
         
         const updatedLoan = await updateLoanService(loanId, cpf, idLivro);
+        await addHistoric('Empréstimo atualizado', criadoEmailService);
         return res.status(200).json(updatedLoan);
     } catch (error) {
         console.error('Erro ao atualizar o empréstimo:', error);
@@ -89,6 +96,7 @@ async function deleteLoan(req, res) {
             return res.status(404).json({ message: 'Empréstimo não encontrado.' });
         }
         await deleteLoanService(loanId);
+        await addHistoric('Empréstimo excluído', criadoEmailService);
         return res.status(200).json({ message: 'Empréstimo excluído com sucesso.' });
     } catch (error) {
         console.error('Erro ao realizar o empréstimo:', error);

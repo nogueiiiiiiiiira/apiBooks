@@ -11,8 +11,14 @@ const {
     addFine
 } = require("../service/returnService");
 
+const {
+    addHistoric
+} = require ("../service/historicService");
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+
+const criadoEm = new Date().toISOString().substring(0, 10);
 
 async function getReturns(req, res) {
     const returns = await listReturns();
@@ -53,18 +59,19 @@ async function postReturn(req, res) {
       }
   
       const prevDev = loan.dataDev;
-      const dataAtual = new Date();
+      const dataAtual = new Date().toISOString().substring(0, 10);
       const multaAtribuida = dataAtual > prevDev ? 'Sim' : 'Não';
   
       await addReturn(cpf, idLivro, prevDev, dataAtual, multaAtribuida);
+      await addHistoric('Devolução registrada', criadoEmail, dataAtrib);
       await updateStock(idLivro);
 
       if(multaAtribuida === 'Sim'){
         const diasAtra = dataAtual - prevDev;
         const total = diasAtra * 1;
         const statusPag = 'Não pago';
-        const criadoEm = dataAtual;
         await addFine(cpf, idLivro, diasAtra, total, statusPag, criadoEm);
+        await addHistoric('Multa registrada', criadoEm);
       }
 
       return res.status(201).json({ message: 'Devolução realizada com sucesso.' });
@@ -102,6 +109,7 @@ async function postReturn(req, res) {
       }
   
       const updateReturn = await updateReturnService(returnId, cpf, idLivro);
+      await addHistoric('Atualização de devolução registrado', criadoEm);
       return res.status(200).json(updateReturn);
     } catch (error) {
       console.error('Erro ao atualizar devolução:', error);
@@ -123,6 +131,7 @@ async function postReturn(req, res) {
       }
   
       await deleteReturnService(Number(idReturn));
+      await addHistoric('Exclusão de devolução registrada', criadoEm);
       return res.status(200).json({ message: 'Devolução deletada com sucesso.' });
     } catch (error) {
       console.error('Erro ao deletar devolução:', error);

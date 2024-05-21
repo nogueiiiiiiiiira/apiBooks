@@ -7,6 +7,12 @@ const {
     deleteFineService
 } = require("../service/fineService");
 
+const {
+    addHistoric
+} = require ("../service/historicService");
+
+const criadoEm = new Date().toISOString().substring(0, 10);;
+
 async function getFines(req, res) {
     const fines = await listFines();
     if(fines.length > 0) {
@@ -38,6 +44,7 @@ async function updatePayment(req, res){
     }
     try{
         await payFine(cpf, idLivro);
+        await addHistoric('Pagamento de multa registrada', criadoEm);
         return res.status(201).json({ message: 'Multa paga com sucesso'})
     }
     catch(error){
@@ -66,8 +73,8 @@ async function updateFine(req, res) {
         if (!existingFine) {
             return res.status(404).json({ message: 'Multa não encontrada.' });
         }
-        
         const updatedFine = await updateFineService(fineId, cpf, idLivro);
+        await addHistoric('Atualização de multa registrada', criadoEm);
         return res.status(200).json(updatedFine);
     } catch (error) {
         console.error('Erro ao atualizar a multa:', error);
@@ -83,6 +90,7 @@ async function deleteFine(req, res) {
             return res.status(404).json({ message: 'Multa não encontrada.' });
         }
         await deleteFineService(existingFine);
+        await addHistoric('Exclusão de multa registrada', criadoEm);
         return res.status(200).json({ message: 'Multa excluída com sucesso.' });
     } catch (error) {
         console.error('Erro ao excluir a multa:', error);
