@@ -1,10 +1,10 @@
 const {
     addLibrarian,
     listLibrarians,
-    listLibrarianById,
     listLibrarianBySearch,
     updateLibrarianService,
-    deleteLibrarianService
+    deleteLibrarianService,
+    listLibrarianById
 } = require("../service/librarianService");
 
 const {
@@ -34,66 +34,67 @@ async function getLibrarianBySearch(req, res) {
 }
 
 async function postLibrarian(req, res) {
-    const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
-  
-    const dateParts = dataNasc.split('/');
-    if (dateParts.length !== 3) {
-      return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
-    }
-  
-    const day = parseInt(dateParts[0]);
-    const month = parseInt(dateParts[1]) - 1;
-    const year = parseInt(dateParts[2]);
-  
-    const isValidDate = !isNaN(day) && !isNaN(month) && !isNaN(year);
-    if (!isValidDate) {
-      return res.status(400).json({ message: 'Data de nascimento inválida.' });
-    }
-  
-    const birthDate = new Date(year, month, day);
-    if (isNaN(birthDate.getTime())) {
-      return res.status(400).json({ message: 'Data de nascimento inválida.' });
-    }
-  
-    const isoDate = birthDate.toISOString().substring(0, 10);
-  
-    try {
-      await addLibrarian(nome, cpf, email, telefone, isoDate, senha, criadoEm);
-      await addHistoric('Cadastro de bibliotecário registado', criadoEm);
-      return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.' });
-    } catch (error) {
-      console.error('Erro ao adicionar bibliotecário:', error);
-      if (error.message === 'CPF já existe!') {
-        return res.status(400).json({ message: error.message });
-      }
-      if (error.message === 'Email já existe!') {
-        return res.status(400).json({ message: error.message });
-      }
-      if (error.message === 'Telefone já existe!') {
-        return res.status(400).json({ message: error.message });
-      }
-      return res.status(500).json({ message: 'Erro ao adicionar bibliotecário.' });
-    }
+  const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
+
+  const dateParts = dataNasc.split('/');
+  if (dateParts.length !== 3) {
+    return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
   }
 
+  const day = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]) - 1;
+  const year = parseInt(dateParts[2]);
+
+  const isValidDate = !isNaN(day) && !isNaN(month) && !isNaN(year);
+  if (!isValidDate) {
+    return res.status(400).json({ message: 'Data de nascimento inválida.' });
+  }
+
+  const birthDate = new Date(year, month, day);
+  if (isNaN(birthDate.getTime())) {
+    return res.status(400).json({ message: 'Data de nascimento inválida.' });
+  }
+
+  const isoDate = birthDate.toISOString().substring(0, 10);
+
+  try {
+    const createdLibrarian = await addLibrarian(nome, cpf, email, telefone, isoDate, senha);
+    criadoEm = new Date().toISOString().substring(0, 10);
+    await addHistoric('Cadastro de bibliotecário registado', criadoEm);
+    return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.', data: createdLibrarian });
+  } catch (error) {
+    console.error('Erro ao adicionar bibliotecário:', error);
+    if (error.message === 'CPF já existe!') {
+      return res.status(400).json({ message: error.message });
+    }
+    if (error.message === 'Email já existe!') {
+      return res.status(400).json({ message: error.message });
+    }
+    if (error.message === 'Telefone já existe!') {
+      return res.status(400).json({ message: error.message });
+    }
+    return res.status(500).json({ message: 'Erro ao adicionar bibliotecário.' });
+  }
+}
+
 async function updateLibrarian(req, res) {
-    const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
-    const { librarianId } = req.params;  
-    if (!nome || !cpf || !email || !telefone || !dataNasc || !senha) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
-    }
-    try {
-        const existingLibrarian = await listLibrariansById(librarianId);
-        if (!existingLibrarian) {
-            return res.status(404).json({ message: 'Bibliotecário não encontrado.' });
-        }      
-        const updateLibrarian = await updateLibrarianService(librarianId, nome, cpf, email, telefone, dataNasc, senha);
-        await addHistoric('Atualização de bibliotecário registada', criadoEm);
-        return res.status(200).json(updateLibrarian);
-    } catch (error) {
-        console.error('Erro ao atualizar bibliotecário:', error);
-        return res.status(500).json({ message: 'Erro ao atualizar bibliotecário.' });
-    }
+  const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
+  const { librarianId } = req.params;  
+  if (!nome || !cpf || !email || !telefone || !dataNasc || !senha) {
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+  }
+  try {
+      const existingLibrarian = await listLibrarianById(librarianId);
+      if (!existingLibrarian) {
+          return res.status(404).json({ message: 'Bibliotecário não encontrado.' });
+      }      
+      const updateLibrarian = await updateLibrarianService(librarianId, nome, cpf, email, telefone, dataNasc, senha);
+      await addHistoric('Atualização de bibliotecário registada', criadoEm);
+      return res.status(200).json(updateLibrarian);
+  } catch (error) {
+      console.error('Erro ao atualizar bibliotecário:', error);
+      return res.status(500).json({ message: 'Erro ao atualizar bibliotecário.' });
+  }
 }
 
 async function deleteLibrarian(req, res) {
@@ -104,7 +105,7 @@ async function deleteLibrarian(req, res) {
             return res.status(404).json({ message: 'Bibliotecário não encontrado.' });
         }
         await deleteLibrarianService(librarianId);
-        await addHistoricalLibrarian('Exclusão de bibliotecário registada', criadoEm);
+        await addHistoric('Exclusão de bibliotecário registada', criadoEm);
         return res.status(200).json({ message: 'Bibliotecário excluído com sucesso.' });
     } catch (error) {
         console.error('Erro ao excluir bibliotecário:', error);

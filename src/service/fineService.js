@@ -82,7 +82,7 @@ async function listFineBySearch(search){
         where: {
             OR: [
                 {
-                    id: Number(search)
+                    id: isNaN(search) ? undefined : Number(search)
                 },
                 {
                     cpf: {

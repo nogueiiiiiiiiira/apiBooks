@@ -86,7 +86,7 @@ async function listBooks() {
 async function listBookById(id) {
     return await prisma.book.findUnique({
         where: {
-            id: Number(id)
+            id: isNaN(id) ? undefined : Number(id) 
         }
     });
 }
@@ -97,7 +97,7 @@ async function listBookBySearch(search) {
         where: {
             OR: [
                 {
-                    id: isNaN(search) ? undefined : Number(search) // Convertendo para número apenas se `search` for um número válido
+                    id: isNaN(search) ? undefined : Number(search)
                 },
                 {
                     nome: {

@@ -97,7 +97,7 @@ async function listLibrarians() {
 async function listLibrarianById(id) {
   return await prisma.Librarian.findUnique({
       where: {
-          id: Number(id)
+        id: isNaN(id) ? undefined : Number(id) 
       }
   });
 }
@@ -168,5 +168,6 @@ module.exports = {
     listLibrarianBySearch,
     updateLibrarianService,
     deleteLibrarianService,
-    listLibrarianById
+    listLibrarianById,
+    
 };
