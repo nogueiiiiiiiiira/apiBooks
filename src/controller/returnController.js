@@ -7,7 +7,8 @@ const {
     listReturnBySearch,
     updateReturnService,
     deleteReturnService,
-    updateStock
+    updateStock,
+    addFine
 } = require("../service/returnService");
 
 const { PrismaClient } = require('@prisma/client');
@@ -57,7 +58,17 @@ async function postReturn(req, res) {
   
       await addReturn(cpf, idLivro, prevDev, dataAtual, multaAtribuida);
       await updateStock(idLivro);
+
+      if(multaAtribuida === 'Sim'){
+        const diasAtra = dataAtual - prevDev;
+        const total = diasAtra * 1;
+        const statusPag = 'Não pago';
+        const criadoEm = dataAtual;
+        await addFine(cpf, idLivro, diasAtra, total, statusPag, criadoEm);
+      }
+
       return res.status(201).json({ message: 'Devolução realizada com sucesso.' });
+
     } catch (error) {
         if (error.message.includes('CPF não existe')) {
             return res.status(400).json({ message: error.message });

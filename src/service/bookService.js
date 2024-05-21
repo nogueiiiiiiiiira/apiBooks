@@ -59,7 +59,7 @@ async function bookExists(title, autor, categoria) {
 
 
     //adicionar livro no banco
-    async function addBook(nome, descricao, autor, valor, categoria, estoque) {
+    async function addBook(nome, descricao, autor, valor, categoria, estoque, criadoEm) {
 
         if(await bookExists(nome, autor, categoria)){
             throw new Error('Esse livro já existe! Livro adicionado ao estoque!');
@@ -73,6 +73,7 @@ async function bookExists(title, autor, categoria) {
                 valor,
                 categoria,
                 estoque,
+                criadoEm,
             }
         });
     }

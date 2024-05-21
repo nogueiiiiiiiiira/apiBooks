@@ -24,11 +24,12 @@ async function getReaderBySearch(req, res) {
         return res.status(200).json(result);
     }
     return res.status(404).json({ message: 'Nada foi encontrado'});
-} //OK
+}
 
 
 async function postReader(req, res) {
     const { nome, cpf, email, telefone, dataNasc} = req.body;
+    const criadoEm = new Date();
     const dateParts = dataNasc.split('/');
     if (dateParts.length !== 3) {
         return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
@@ -49,7 +50,7 @@ async function postReader(req, res) {
     const isoDate = birthDate.toISOString();
 
     try {
-        await addReader(nome, cpf, email, telefone, isoDate);
+        await addReader(nome, cpf, email, telefone, isoDate, criadoEm);
         return res.status(201).json({ message: 'Leitor adicionado com sucesso.' });
     } catch (error) {
 

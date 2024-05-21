@@ -64,7 +64,7 @@ async function cpfExists(cpf) {
   }
 
 //adicionar um leitor
-async function addReader(nome, cpf, email, telefone, dataNasc) {
+async function addReader(nome, cpf, email, telefone, dataNasc, criadoEm) {
 
     if (await cpfExists(cpf)) {
         throw new Error('CPF já existe!');
@@ -83,6 +83,7 @@ async function addReader(nome, cpf, email, telefone, dataNasc) {
             email,
             telefone,
             dataNasc,
+            criadoEm,
         }
     })
 }

@@ -35,8 +35,10 @@ async function postBook(req, res) {
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
 
+    const criadoEm = new Date();
+
     try{
-        await addBook(nome, descricao, autor, valor, categoria, estoque);
+        await addBook(nome, descricao, autor, valor, categoria, estoque, criadoEm);
         return res.status(201).json({ message: 'Livro adicionado com sucesso.' });
     }
     catch(error){
@@ -62,7 +64,7 @@ async function updateBook(req, res) {
             return res.status(404).json({ message: 'Livro não encontrado.' });
         }
         
-        const updatedBook = await updateBookService(bookId, nome, descricao, autor, valor, categoria, estoque); // Passando o bookId como o primeiro parâmetro
+        const updatedBook = await updateBookService(bookId, nome, descricao, autor, valor, categoria, estoque);
         return res.status(200).json(updatedBook);
     } catch (error) {
         console.error('Erro ao atualizar o livro:', error);

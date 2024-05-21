@@ -71,4 +71,19 @@ router.post('/return', postReturn);
 router.put('/return/:returnId', updateReturn);
 router.delete('/return/:returnId', deleteReturn);
 
+const {
+    getFines,
+    getFinesBySearch,
+    updatePayment,
+    updateFine,
+    deleteFine
+} = require('./fineController.js');
+
+router.get('/fines', getFines);
+router.get('/finesSearch/:fineSearch', getFinesBySearch);
+router.put('/payFine', updatePayment);
+router.put('/fine/:fineId', updateFine);
+router.delete('/fine/:fineId', deleteFine);
+
+
 module.exports = router;

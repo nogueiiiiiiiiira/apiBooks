@@ -51,9 +51,10 @@ async function postLibrarian(req, res) {
     }
   
     const isoDate = birthDate.toISOString();
+    const criadoEm = new Date();
   
     try {
-      await addLibrarian(nome, cpf, email, telefone, isoDate, senha);
+      await addLibrarian(nome, cpf, email, telefone, isoDate, senha, criadoEm);
       return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.' });
     } catch (error) {
       console.error('Erro ao adicionar bibliotecário:', error);
@@ -69,6 +70,7 @@ async function postLibrarian(req, res) {
       return res.status(500).json({ message: 'Erro ao adicionar bibliotecário.' });
     }
   }
+  
 async function updateLibrarian(req, res) {
     const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
     const { librarianId } = req.params;  

@@ -64,7 +64,7 @@ async function cpfExists(cpf) {
   }
 
   //adicionar um novo bibliotecário ao banco de dados
-  async function addLibrarian(nome, cpf, email, telefone, dataNasc, senha) {
+  async function addLibrarian(nome, cpf, email, telefone, dataNasc, senha, criadoEm) {
     if (await cpfExists(cpf)) {
       throw new Error('CPF já existe!');
     }
@@ -83,6 +83,7 @@ async function cpfExists(cpf) {
         telefone,
         dataNasc,
         senha,
+        criadoEm,
       },
     });
   }

@@ -18,6 +18,7 @@ model Book {
   valor String
   categoria String
   estoque String
+  criadoEm DateTime
 }
 
 model Librarian {
@@ -28,6 +29,7 @@ model Librarian {
   telefone String
   dataNasc DateTime
   senha String
+  criadoEm DateTime
 }
 
 model Loan {
@@ -45,6 +47,7 @@ model Reader {
   email String
   telefone String
   dataNasc DateTime
+  criadoEm DateTime
 }
 
 model Return {
@@ -54,4 +57,14 @@ model Return {
   prevDev DateTime
   dataAtual DateTime
   multaAtribuida String
+}
+
+model Fine {
+  id Int @id @default(autoincrement())
+  cpf String
+  idLivro String
+  diasAtra String
+  total Float
+  statusPag String
+  criadoEm DateTime
 }

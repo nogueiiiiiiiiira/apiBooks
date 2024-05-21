@@ -135,6 +135,20 @@ async function deleteReturnService(id){
     });
 }
 
+//atribuir multa
+async function addFine(cpf, idLivro, diasAtra, total, status, criadoEm){
+    return await prisma.fine.create({
+      data: {
+        cpf,
+        idLivro,
+        diasAtra,
+        total,
+        statusPag,
+        criadoEm,
+      }
+    });
+}
+
 module.exports = {
     addReturn,
     listReturns,
@@ -142,5 +156,6 @@ module.exports = {
     listReturnBySearch,
     updateReturnService,
     deleteReturnService,
-    updateStock
+    updateStock,
+    addFine,
 };
