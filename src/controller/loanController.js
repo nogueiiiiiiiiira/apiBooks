@@ -47,8 +47,7 @@ async function postLoan(req, res) {
     dateDev.setDate(dateDev.getDate() + 7);
   
     try {
-        await addLoan(cpf, idLivro, dateEmp, dateDev);
-        await addHistoric('Empréstimo registrado', criadoEm);
+        await addLoan(cpf, idLivro, dateEmp.toISOString().substring(0, 10), dateDev.toISOString().substring(0, 10));
         return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
     } catch (error) {
       if(error.message === 'Livro não foi encontrado no banco de dados. Não foi possível realizar o empréstimo'){
@@ -61,7 +60,7 @@ async function postLoan(req, res) {
       if(error.message === 'CPF não foi encontrado no banco de dados. Não foi possível realizar o empréstimo'){
         return res.status(400).json({ message: error.message });
       }
-      return res.status(500).json({ message: 'Erro ao realizar o empréstimo.' });
+      return res.status(500).json({ message: error });
     }
   }
 

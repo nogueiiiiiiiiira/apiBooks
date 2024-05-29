@@ -59,11 +59,11 @@ async function postReturn(req, res) {
       }
   
       const prevDev = loan.dataDev;
-      const dataAtual = new Date().toISOString().substring(0, 10);
+      const dataAtual = new Date();
       const multaAtribuida = dataAtual > prevDev ? 'Sim' : 'Não';
   
-      await addReturn(cpf, idLivro, prevDev, dataAtual, multaAtribuida);
-      await addHistoric('Devolução registrada', criadoEmail, dataAtrib);
+      await addReturn(cpf, idLivro, prevDev, criadoEm, multaAtribuida);
+      await addHistoric('Devolução registrada', criadoEm);
       await updateStock(idLivro);
 
       if(multaAtribuida === 'Sim'){
@@ -86,7 +86,7 @@ async function postReturn(req, res) {
 
           }
   
-      return res.status(500).json({ message: 'Erro ao realizar a devolução.' });
+      return res.status(500).json({ message: "Não foi possível realizar a devolução" });
     }
   }
   
