@@ -22,45 +22,32 @@ async function idExists(idLivro) {
       }
     });
 
-    return book.length > 0;
-  }
+    return book!== null;
+}
 
 //pagar a multa e atualizar o seu statusPag
-async function payFine(cpf, idLivro){
+async function payFine(cpf, idLivro, statusPag) {
 
-    if(!await cpfExists(cpf)){
+    if (!await cpfExists(cpf)) {
         throw new Error('CPF não existe! Não foi possível pagar a multa');
-    }
-
-    if(!await idExists(idLivro)){
+      }
+    
+      if (!await idExists(idLivro)) {
         throw new Error('Livro não existe! Não foi possível pagar a multa');
-    }
-
-   const existingFine = await prisma.fine.findFirst({
-        where: {
+      }
+      return await prisma.fine.update({
+          where: {
             AND: [
-                { cpf: { equals: cpf } },
-                { idLivro: { equals: idLivro } }
+              { cpf: { equals: cpf } },
+              { idLivro: { equals: idLivro }}
             ]
-        }
-   });
-
-   if (!existingFine){
-    throw new Error('Multa não encontrada')
-   }
-
-   await prisma.fine.update({
-    where: {
-        AND: [
-            { cpf: { equals: cpf } },
-            { idLivro: { equals: idLivro }}
-        ]
-    },
-    data: {
-        statusPag: 'Multa paga'
-    }
-   })
-}
+          },
+          
+          data: {
+            statusPag: 'Multa Paga'
+          }
+        });
+      }
 
 //listar todas as multas
 async function listFines() {

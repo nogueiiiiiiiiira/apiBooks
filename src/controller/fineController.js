@@ -39,13 +39,13 @@ async function getFinesBySearch(req, res) {
 async function updatePayment(req, res){
     const { cpf, idLivro } = req.body;
 
-    if(!cpf || !idLivro){
+    if(!cpf ||!idLivro){
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
     try{
         await payFine(cpf, idLivro);
         await addHistoric('Pagamento de multa registrada', criadoEm);
-        return res.status(201).json({ message: 'Multa paga com sucesso'})
+        return res.status(201).json({ message: 'Multa paga com sucesso'});
     }
     catch(error){
         if(error.message === 'CPF não existe! Não foi possível pagar a multa'){
@@ -56,7 +56,7 @@ async function updatePayment(req, res){
             return res.status(400).json({ message: error.message }); 
         }
 
-        return res.status(500).json({ message: 'Erro ao realizar o pagamento.' });
+        return res.status(500).json({ message: error });
     }
 }
 

@@ -63,7 +63,7 @@ model Fine {
   cpf String
   idLivro String
   diasAtra String
-  total Float
+  total String
   statusPag String
   criadoEm String
 }

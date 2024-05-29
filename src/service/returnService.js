@@ -136,7 +136,7 @@ async function deleteReturnService(id){
 }
 
 //atribuir multa
-async function addFine(cpf, idLivro, diasAtra, total, status, criadoEm){
+async function addFine(cpf, idLivro, diasAtra, total, statusPag, criadoEm){
     return await prisma.fine.create({
       data: {
         cpf,
