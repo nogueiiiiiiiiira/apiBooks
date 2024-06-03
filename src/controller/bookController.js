@@ -47,7 +47,7 @@ async function postBook(req, res) {
         return res.status(201).json({ message: 'Livro adicionado com sucesso' });
     }
     catch(error){
-        if(error.message === 'Livro já existente. Livros somente adicionados ao estoque'){
+        if(error.message === 'Esse livro já existe! Livro adicionado ao estoque!'){
             await updateStock(nome, autor, categoria, estoque);
             await addHistoric('Livros adicionados ao estoque', criadoEm)
             return res.status(200).json({ message: 'Livro já existente. Livros somente adicionados ao estoque' });

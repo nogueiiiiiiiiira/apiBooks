@@ -40,11 +40,7 @@ async function bookExists(title, autor, categoria) {
                 ]
             }
         });
-    
-        if (!existingBook) {
-            throw new Error('Livro não encontrado.');
-        }
-    
+
         const currentStock = parseInt(existingBook.estoque); 
         const updatedStock = currentStock + parseInt(quantidade); 
         await prisma.book.update({
