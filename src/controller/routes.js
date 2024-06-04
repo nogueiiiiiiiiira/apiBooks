@@ -1,3 +1,5 @@
+//rotas back
+
 const express = require('express');
 const router = express.Router();
 
@@ -10,7 +12,7 @@ const {
 } = require('./bookController.js');
 
 router.get('/books', getBooks);
-router.get('/bookSearch/:bookSearch', getBookBySearch);
+router.get('/books/:bookSearch', getBookBySearch);
 router.post('/book', postBook);
 router.put('/book/:bookId', updateBook);
 router.delete('/book/:bookId', deleteBook);
