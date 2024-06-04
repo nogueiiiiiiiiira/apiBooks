@@ -10,7 +10,7 @@ const {
 } = require('./bookController.js');
 
 router.get('/books', getBooks);
-router.get('/books/:bookSearch', getBookBySearch);
+router.get('/bookSearch/:bookSearch', getBookBySearch);
 router.post('/book', postBook);
 router.put('/book/:bookId', updateBook);
 router.delete('/book/:bookId', deleteBook);
