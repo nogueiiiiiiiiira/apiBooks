@@ -13,9 +13,9 @@ const {
 
 router.get('/books', getBooks);
 router.get('/books/:bookSearch', getBookBySearch);
-router.post('/book', postBook);
-router.put('/book/:bookId', updateBook);
-router.delete('/book/:bookId', deleteBook);
+router.post('/books', postBook);
+router.put('/books/:bookId', updateBook);
+router.delete('/books/:bookId', deleteBook);
 
 const {
     getLibrarians,
