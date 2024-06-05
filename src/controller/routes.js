@@ -13,7 +13,7 @@ const {
 
 router.get('/books', getBooks);
 router.get('/books/:bookSearch', getBookBySearch);
-router.post('/books', postBook);
+router.post('/books/', postBook);
 router.put('/books/:bookId', updateBook);
 router.delete('/books/:bookId', deleteBook);
 
