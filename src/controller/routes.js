@@ -26,10 +26,10 @@ const {
 } = require('./librarianController.js');
 
 router.get('/librarians', getLibrarians);
-router.get('/librarianSearch/:librarianSearch', getLibrarianBySearch);
-router.post('/librarian', postLibrarian);
-router.put('/librarian/:librarianId', updateLibrarian);
-router.delete('/librarian/:librarianId', deleteLibrarian);
+router.get('/librarians/:librarianSearch', getLibrarianBySearch);
+router.post('/librarians', postLibrarian);
+router.put('/librarians/:librarianId', updateLibrarian);
+router.delete('/librarians/:librarianId', deleteLibrarian);
 
 const {
     getLoans,
