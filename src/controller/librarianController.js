@@ -55,11 +55,14 @@ async function postLibrarian(req, res) {
     return res.status(400).json({ message: 'Data de nascimento inválida.' });
   }
 
-  const isoDate = birthDate.toISOString().substring(0, 10);
+  const formattedDate = birthDate.toLocaleDateString('pt-BR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
 
   try {
-    const createdLibrarian = await addLibrarian(nome, cpf, email, telefone, isoDate, senha);
-    criadoEm = new Date().toISOString().substring(0, 10);
+    const createdLibrarian = await addLibrarian(nome, cpf, email, telefone, formattedDate, senha, criadoEm);
     await addHistoric('Cadastro de bibliotecário registado', criadoEm);
     return res.status(201).json({ message: 'Bibliotecário adicionado com sucesso.', data: createdLibrarian });
   } catch (error) {
