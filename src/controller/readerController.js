@@ -36,29 +36,37 @@ async function getReaderBySearch(req, res) {
 
 async function postReader(req, res) {
     const { nome, cpf, email, telefone, dataNasc} = req.body;
+    
     const dateParts = dataNasc.split('/');
-    if (dateParts.length !== 3) {
-        return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
-    }
-    const day = parseInt(dateParts[0]);
-    const month = parseInt(dateParts[1]) - 1;
-    const year = parseInt(dateParts[2]);
+  if (dateParts.length !== 3) {
+    return res.status(400).json({ message: 'Formato de data inválido. Use o formato DD/MM/YYYY.' });
+  }
 
-    const isValidDate = !isNaN(day) && !isNaN(month) && !isNaN(year);
-    if (!isValidDate) {
-        return res.status(400).json({ message: 'Data de nascimento inválida'});
-    }
+  const day = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]) - 1;
+  const year = parseInt(dateParts[2]);
 
-    const birthDate = new Date(year, month, day);
-    if (isNaN(birthDate.getTime())) {
-        return res.status(400).json({ message: 'Data de nascimento inválida.' });
-    }
-    const isoDate = birthDate.toISOString().substring(0, 10);
+  const isValidDate = !isNaN(day) && !isNaN(month) && !isNaN(year);
+  if (!isValidDate) {
+    return res.status(400).json({ message: 'Data de nascimento inválida.' });
+  }
+
+  const birthDate = new Date(year, month, day);
+  if (isNaN(birthDate.getTime())) {
+    return res.status(400).json({ message: 'Data de nascimento inválida.' });
+  }
+
+  const formattedDate = birthDate.toLocaleDateString('pt-BR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+
 
     try {
-        await addReader(nome, cpf, email, telefone, isoDate, criadoEm);
+        const createdReader = await addReader(nome, cpf, email, telefone, formattedDate, criadoEm);
         await addHistoric('Cadastro de leitor registrado', criadoEm);
-        return res.status(201).json({ message: 'Leitor adicionado com sucesso.' });
+        return res.status(201).json({ message: 'Leitor adicionado com sucesso.', data: createdReader  });
     } catch (error) {
 
         if (error.message === 'CPF já existe!') {
