@@ -54,10 +54,10 @@ const {
 } = require('./readerController.js');
 
 router.get('/readers', getReaders);
-router.get('/readerSearch/:readerSearch', getReaderBySearch);
-router.post('/reader', postReader);
-router.put('/reader/:readerId', updateReader);
-router.delete('/reader/:readerId', deleteReader);
+router.get('/readers/:readerSearch', getReaderBySearch);
+router.post('/readers', postReader);
+router.put('/readers/:readerId', updateReader);
+router.delete('/readers/:readerId', deleteReader);
 
 const {
     getReturns,
