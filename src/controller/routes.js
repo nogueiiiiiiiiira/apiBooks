@@ -40,10 +40,10 @@ const {
 } = require('./loanController.js');
 
 router.get('/loans', getLoans);
-router.get('/loanSearch/:loanSearch', getLoanBySearch);
-router.post('/loan', postLoan);
-router.put('/loan/:loanId', updateLoan);
-router.delete('/loan/:loanId', deleteLoan);
+router.get('/loans/:loanSearch', getLoanBySearch);
+router.post('/loans', postLoan);
+router.put('/loasn/:loanId', updateLoan);
+router.delete('/loans/:loanId', deleteLoan);
 
 const {
     getReaders,
@@ -68,10 +68,10 @@ const {
 } = require('./returnController.js');
 
 router.get('/returns', getReturns);
-router.get('/readerSearch/:returnSearch', getReturnBySearch);
-router.post('/return', postReturn);
-router.put('/return/:returnId', updateReturn);
-router.delete('/return/:returnId', deleteReturn);
+router.get('/returns/:returnSearch', getReturnBySearch);
+router.post('/returns', postReturn);
+router.put('/returns/:idReturn', updateReturn);
+router.delete('/returns/:idReturn', deleteReturn);
 
 const {
     getFines,
@@ -82,10 +82,10 @@ const {
 } = require('./fineController.js');
 
 router.get('/fines', getFines);
-router.get('/finesSearch/:fineSearch', getFinesBySearch);
+router.get('/fines/:fineSearch', getFinesBySearch);
 router.put('/payFine', updatePayment);
-router.put('/fine/:fineId', updateFine);
-router.delete('/fine/:fineId', deleteFine);
+router.put('/fines/:fineId', updateFine);
+router.delete('/fines/:fineId', deleteFine);
 
 
 module.exports = router;
