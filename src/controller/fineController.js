@@ -38,16 +38,22 @@ async function getFinesBySearch(req, res) {
 
 async function updatePayment(req, res){
     const { cpf, idLivro } = req.body;
+    console.log("CPF:", cpf);
+    console.log("ID do Livro:", idLivro);
 
-    if(!cpf ||!idLivro){
+    if (!cpf || !idLivro){
+        console.log("Campos obrigatórios faltando:", { cpf, idLivro });
         return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
     }
-    try{
-        await payFine(cpf, idLivro);
+
+    try {
+        console.log("Tentando pagar multa...");
+        await payFine(cpf, idLivro, 'Multa Paga');
+        console.log("Multa paga com sucesso.");
         await addHistoric('Pagamento de multa registrada', criadoEm);
         return res.status(201).json({ message: 'Multa paga com sucesso'});
-    }
-    catch(error){
+    } catch(error) {
+        console.error("Erro ao pagar multa:", error);
         if(error.message === 'CPF não existe! Não foi possível pagar a multa'){
             return res.status(400).json({ message: error.message }); 
         }
@@ -59,6 +65,7 @@ async function updatePayment(req, res){
         return res.status(500).json({ message: error });
     }
 }
+
 
 async function updateFine(req, res) {
     const { cpf, idLivro} = req.body;
@@ -89,7 +96,7 @@ async function deleteFine(req, res) {
         if (!existingFine) {
             return res.status(404).json({ message: 'Multa não encontrada.' });
         }
-        await deleteFineService(existingFine);
+        await deleteFineService(fineId);
         await addHistoric('Exclusão de multa registrada', criadoEm);
         return res.status(200).json({ message: 'Multa excluída com sucesso.' });
     } catch (error) {

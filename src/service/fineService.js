@@ -16,9 +16,9 @@ async function cpfExists(cpf) {
 
 //verificar se o id do livro existe nas multas
 async function idExists(idLivro) {
-    const book = await prisma.fine.findUnique({
+    const book = await prisma.fine.findMany({
       where: {
-        idLivro: Number(idLivro)
+        idLivro: idLivro
       }
     });
 
@@ -27,27 +27,39 @@ async function idExists(idLivro) {
 
 //pagar a multa e atualizar o seu statusPag
 async function payFine(cpf, idLivro, statusPag) {
-
-    if (!await cpfExists(cpf)) {
+    // Verificar se o CPF existe nas multas
+    const cpfExistsResult = await cpfExists(cpf);
+    if (!cpfExistsResult) {
         throw new Error('CPF não existe! Não foi possível pagar a multa');
-      }
-    
-      if (!await idExists(idLivro)) {
+    }
+
+    // Verificar se o ID do livro existe nas multas
+    const idExistsResult = await idExists(idLivro);
+    if (!idExistsResult) {
         throw new Error('Livro não existe! Não foi possível pagar a multa');
-      }
-      return await prisma.fine.update({
-          where: {
-            AND: [
-              { cpf: { equals: cpf } },
-              { idLivro: { equals: idLivro }}
-            ]
-          },
-          
-          data: {
-            statusPag: 'Multa Paga'
-          }
+    }
+
+    try {
+        // Atualiza todas as multas com base no CPF e no ID do livro
+        const updatedFines = await prisma.fine.updateMany({
+            where: {
+                cpf: cpf,
+                idLivro: idLivro
+            },
+            data: {
+                statusPag: statusPag
+            }
         });
-      }
+        return updatedFines;
+    } catch (error) {
+        console.error('Erro ao pagar a multa:', error);
+        throw new Error('Erro ao pagar a multa');
+    }
+}
+
+
+
+
 
 //listar todas as multas
 async function listFines() {
@@ -105,7 +117,7 @@ async function updateFineService(id, cpf, idLivro){
 
 //excluir a multa
 async function deleteFineService(id){
-    return await prisma.return.delete({
+    return await prisma.fine.delete({
         where: {
             id: Number(id)
         }
