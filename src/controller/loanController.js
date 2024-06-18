@@ -7,13 +7,12 @@ const {
     updateLoanService,
     deleteLoanService,
     listLoanById,
+    getBookNameByLoanId,
 } = require("../service/loanService"); 
 
 const {
     addHistoric
 } = require("../service/historicService");
-
-const criadoEm = new Date().toISOString().substring(0, 10);
 
 async function getLoans(req, res) {
     const loans = await listLoans();
@@ -47,7 +46,9 @@ async function postLoan(req, res) {
     dateDev.setDate(dateDev.getDate() + 7);
   
     try {
-        await addLoan(cpf, idLivro, dateEmp.toISOString().substring(0, 10), dateDev.toISOString().substring(0, 10));
+
+        const nomeLivro = await getBookNameByLoanId(idLivro);
+        await addLoan(cpf, idLivro, nomeLivro, dateEmp.toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' }), dateDev.toLocaleDateString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit' }));
         return res.status(201).json({ message: 'Empréstimo realizado com sucesso.' });
     } catch (error) {
       if(error.message === 'Livro não foi encontrado no banco de dados. Não foi possível realizar o empréstimo'){

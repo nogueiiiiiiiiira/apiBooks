@@ -11,7 +11,7 @@ const {
   addHistoric
 } = require ("../service/historicService");
 
-const criadoEm = new Date().toISOString().substring(0, 10);;
+const criadoEm = new Date().toISOString().slice(0, 10).split('-').join('/');
 
 async function getLibrarians(req, res) {
     const librarians = await listLibrarians();

@@ -47,6 +47,7 @@ async function addLoan(cpf, idLivro, dataEmp, dataDev) {
         data: {
             cpf,
             idLivro,
+            nomeLivro,
             dataEmp,
             dataDev,
         },
@@ -142,6 +143,32 @@ async function deleteLoanService(id) {
     });
 }
 
+async function getBookNameByLoanId(id) {
+    const loan = await prisma.loan.findUnique({
+      where: {
+        id: Number(id)
+      },
+      select: {
+        bookId: true 
+      }
+    });
+  
+    if (loan) {
+      const book = await prisma.book.findUnique({
+        where: {
+          id: loan.bookId
+        },
+        select: {
+          nome: true 
+        }
+      });
+  
+      return book.name; 
+    } else {
+      return null;
+    }
+  }
+
 module.exports = {
     addLoan,
     listLoans,
@@ -149,5 +176,6 @@ module.exports = {
     updateLoanService,
     deleteLoanService,
     listLoanById,
-    updateStock
+    updateStock,
+    getBookNameByLoanId
 };

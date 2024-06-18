@@ -11,7 +11,7 @@ const {
     addHistoric
 } = require("../service/historicService.js");
 
-const criadoEm = new Date().toISOString().substring(0, 10);
+const criadoEm = new Date().toISOString().slice(0, 10).split('-').join('/');
 
 async function getReaders(req, res) {
     const readers = await listReaders();
@@ -94,16 +94,14 @@ async function updateReader(req, res) {
         if (!existingReader) {
             return res.status(404).json({ message: 'Leitor não encontrado.' });
         }
-        const birthDate = new Date(dataNasc);
-        const isoDate = birthDate.toISOString();
-        const updateReader = await updateReaderService(readerId, nome, cpf, email, telefone, isoDate);
-        await addHistoric('Atualização de leitor registrado', criadoEm);
-        return res.status(200).json(updateReader);
-    } catch (error) {
-        console.error('Erro ao atualizar leitor:', error);
-        return res.status(500).json({ message: 'Erro ao atualizar leitor'})
-    }
-} //OK
+        const updateReader = await updateReaderService(readerId, nome, cpf, email, telefone, dataNasc);
+      await addHistoric('Atualização de leitor registada', criadoEm);
+      return res.status(200).json(updateReader);
+  } catch (error) {
+      console.error('Erro ao atualizar leitor:', error);
+      return res.status(500).json({ message: 'Erro ao atualizar leitor.' });
+  }
+}
 
 async function deleteReader(req, res) {
     const { readerId } = req.params;
@@ -119,7 +117,7 @@ async function deleteReader(req, res) {
         console.error('Erro ao excluir leitor:', error);
         return res.status(500).json({ message: 'Erro interno do servidor.' });
     }
-} //OK
+}
 
 module.exports = {
     getReaders,

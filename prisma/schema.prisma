@@ -35,6 +35,7 @@ model Loan {
   id Int @id @default(autoincrement())
   cpf String
   idLivro String
+  nomeLivro String
   dataEmp String
   dataDev String
 }
