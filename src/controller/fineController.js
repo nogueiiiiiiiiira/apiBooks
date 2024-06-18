@@ -12,7 +12,6 @@ const {
 } = require ("../service/historicService");
 
 const criadoEm = new Date().toISOString().slice(0, 10).split('-').join('/');
-
 async function getFines(req, res) {
     const fines = await listFines();
     if(fines.length > 0) {
