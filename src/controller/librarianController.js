@@ -1,4 +1,9 @@
+//controller
+
+const express = require('express');
+const router = express.Router();
 const {
+    login,
     addLibrarian,
     listLibrarians,
     listLibrarianBySearch,
@@ -11,7 +16,8 @@ const {
   addHistoric
 } = require ("../service/historicService");
 
-const criadoEm = new Date().toISOString().slice(0, 10).split('-').join('/');
+const jwt = require('jsonwebtoken');
+const criadoEm = new Date().toISOString().substring(0, 10);;
 
 async function getLibrarians(req, res) {
     const librarians = await listLibrarians();
@@ -80,6 +86,20 @@ async function postLibrarian(req, res) {
   }
 }
 
+async function postLogin(req, res) {
+  const { email, senha } = req.body;
+  const librarian = await login(email, senha);
+
+  if (!librarian) {
+    return res.status(401).json({ error: 'Bibliotecário não encontrado!' });
+  }
+
+  const secretKey = process.env.SECRET_KEY || 'default_secret_key'; // <--- Adicionei um valor padrão para o secretKey
+  const token = jwt.sign({ librarian }, secretKey, { expiresIn: '1h' });
+
+  res.json({ token });
+}
+
 async function updateLibrarian(req, res) {
   const { nome, cpf, email, telefone, dataNasc, senha } = req.body;
   const { librarianId } = req.params;  
@@ -121,5 +141,6 @@ module.exports = {
     getLibrarianBySearch,
     postLibrarian,
     updateLibrarian,
-    deleteLibrarian
+    deleteLibrarian,
+    postLogin
 };

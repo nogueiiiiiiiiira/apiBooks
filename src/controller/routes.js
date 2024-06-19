@@ -22,7 +22,8 @@ const {
     getLibrarianBySearch,
     postLibrarian,
     updateLibrarian,
-    deleteLibrarian
+    deleteLibrarian,
+    postLogin
 } = require('./librarianController.js');
 
 router.get('/librarians', getLibrarians);
@@ -30,6 +31,8 @@ router.get('/librarians/:librarianSearch', getLibrarianBySearch);
 router.post('/librarians', postLibrarian);
 router.put('/librarians/:librarianId', updateLibrarian);
 router.delete('/librarians/:librarianId', deleteLibrarian);
+router.post('/login', postLogin);
+
 
 const {
     getLoans,
@@ -86,6 +89,5 @@ router.get('/fines/:fineSearch', getFinesBySearch);
 router.put('/payFine', updatePayment);
 router.put('/fines/:fineId', updateFine);
 router.delete('/fines/:fineId', deleteFine);
-
 
 module.exports = router;

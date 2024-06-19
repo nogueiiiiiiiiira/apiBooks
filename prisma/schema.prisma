@@ -24,7 +24,7 @@ model Librarian {
   id Int @id @default(autoincrement())
   nome String
   cpf String
-  email String
+  email String @unique
   telefone String
   dataNasc String
   senha String

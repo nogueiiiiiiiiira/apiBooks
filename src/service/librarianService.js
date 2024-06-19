@@ -1,92 +1,80 @@
+//service
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const bcrypt = require('bcrypt');
 
-//verificar se o cpf já existe
+// Verificar se o CPF já existe
 async function cpfExists(cpf) {
-    const librariansCPF = await prisma.librarian.findMany({
-      where: {
-        cpf: {
-          equals: cpf,
-        },
-      },
-    });
+  const librariansCPF = await prisma.librarian.findFirst({ where: { cpf } });
+  const readersCPF = await prisma.reader.findFirst({ where: { cpf } });
+  return Boolean(librariansCPF || readersCPF);
+}
 
-    const readersCPF = await prisma.reader.findMany({ 
-      where: {
-        cpf: {
-          equals: cpf,
-        },
-      },
-    })
+// Verificar se o email já existe
+async function emailExists(email) {
+  const librariansEmail = await prisma.librarian.findFirst({ where: { email } });
+  const readersEmail = await prisma.reader.findFirst({ where: { email } });
+  return Boolean(librariansEmail || readersEmail);
+}
 
-    return librariansCPF.length > 0 || readersCPF.length > 0;
-  }
-
-  //verificar se o email já existe
-  async function emailExists(email) {
-    const librariansEmail = await prisma.librarian.findMany({
-      where: {
-        email: {
-          equals: email,
-        },
-      },
-    });
-
-    const readersEmail = await prisma.reader.findMany({
-      where: {
-        email: {
-          equals: email,
-        },
-      },
-    });
-
-    return librariansEmail.length > 0 || readersEmail.length > 0;
-  }
-
-  //verificar se o telefone já existe
-  async function telefoneExists(telefone) {
-    const librariansTelefone = await prisma.librarian.findMany({
-      where: {
-        telefone: {
-          equals: telefone,
-        },
-      },
-    });
-
-    const readersTelefone = await prisma.reader.findMany({
-      where: {
-        telefone: {
-          equals: telefone,
-        },
-      },
-    });
-    return librariansTelefone.length > 0 || readersTelefone.length > 0;
-  }
+//verificar se o telefone já existe
+async function telefoneExists(telefone) {
+  const librariansTelefone = await prisma.librarian.findFirst({ where: { telefone } });
+  const readersTelefone = await prisma.reader.findFirst({ where: { telefone } });
+  return Boolean(librariansTelefone || readersTelefone);
+}
 
   //adicionar um novo bibliotecário ao banco de dados
   async function addLibrarian(nome, cpf, email, telefone, dataNasc, senha, criadoEm) {
     if (await cpfExists(cpf)) {
-      throw new Error('CPF já existe!');
+        throw new Error('CPF já existe!');
     }
     if (await emailExists(email)) {
-      throw new Error('Email já existe!');
+        throw new Error('Email já existe!');
     }
     if (await telefoneExists(telefone)) {
-      throw new Error('Telefone já existe!');
+        throw new Error('Telefone já existe!');
     }
-  
+
+    const hashedSenha = await bcrypt.hash(senha, 10);
+
     return await prisma.librarian.create({
-      data: {
-        nome,
-        cpf,
-        email,
-        telefone,
-        dataNasc,
-        senha,
-        criadoEm,
-      },
+        data: {
+            nome,
+            cpf,
+            email,
+            telefone,
+            dataNasc,
+            senha: hashedSenha,
+            criadoEm,
+        },
     });
+}
+
+//função de login que verifica a senha fornecida pelo usuário com a senha
+async function login(email, senha) {
+  const librarian = await prisma.librarian.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  console.log('Librarian:', librarian); // Check the value of librarian
+
+  if (!librarian) {
+    throw new Error('Bibliotecário não encontrado!');
   }
+
+  const isSenhaValid = await bcrypt.compare(senha, librarian.senha);
+  console.log('Is senha valid:', isSenhaValid); // Check the result of bcrypt.compare
+
+  if (!isSenhaValid) {
+    throw new Error('Senha incorreta!');
+  }
+
+  return librarian;
+}
 
   //buscar todos os bibliotecários
 async function listLibrarians() {
@@ -108,7 +96,7 @@ async function listLibrarianBySearch(search) {
         where: {
             OR: [
                 {
-                    id: isNaN(search) ? undefined : Number(search) // Convertendo para número apenas se `search` for um número válido
+                    id: isNaN(search) ? undefined : Number(search) 
                 },
                 {
                     cpf: {
@@ -152,7 +140,6 @@ async function updateLibrarianService(id, nome, cpf, email, telefone, dataNasc, 
     });
 }
 
-
 // deletar um bibliotecário
 async function deleteLibrarianService(id) {
     return await prisma.librarian.delete({
@@ -163,11 +150,11 @@ async function deleteLibrarianService(id) {
 }
 
 module.exports = {
-    addLibrarian,
-    listLibrarians,
-    listLibrarianBySearch,
-    updateLibrarianService,
-    deleteLibrarianService,
-    listLibrarianById,
-    
+  login,
+  addLibrarian,
+  listLibrarians,
+  listLibrarianBySearch,
+  updateLibrarianService,
+  deleteLibrarianService,
+  listLibrarianById,
 };
