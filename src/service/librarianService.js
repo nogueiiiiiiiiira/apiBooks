@@ -52,7 +52,7 @@ async function telefoneExists(telefone) {
     });
 }
 
-//função de login que verifica a senha fornecida pelo usuário com a senha
+//função de login
 async function login(email, senha) {
   const librarian = await prisma.librarian.findUnique({
     where: {
@@ -60,14 +60,14 @@ async function login(email, senha) {
     },
   });
 
-  console.log('Librarian:', librarian); // Check the value of librarian
+  console.log('Librarian:', librarian); 
 
   if (!librarian) {
     throw new Error('Bibliotecário não encontrado!');
   }
 
   const isSenhaValid = await bcrypt.compare(senha, librarian.senha);
-  console.log('Is senha valid:', isSenhaValid); // Check the result of bcrypt.compare
+  console.log('Is senha valid:', isSenhaValid); 
 
   if (!isSenhaValid) {
     throw new Error('Senha incorreta!');
