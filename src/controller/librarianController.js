@@ -17,7 +17,7 @@ const {
 } = require ("../service/historicService");
 
 const jwt = require('jsonwebtoken');
-const criadoEm = new Date().toISOString().substring(0, 10);;
+const criadoEm = new Date().toISOString().slice(0, 10).split('-').join('/');
 
 async function getLibrarians(req, res) {
     const librarians = await listLibrarians();
@@ -87,17 +87,29 @@ async function postLibrarian(req, res) {
 }
 
 async function postLogin(req, res) {
-  const { email, senha } = req.body;
-  const librarian = await login(email, senha);
+  let librarian;
+  let responseSent = false;
 
-  if (!librarian) {
-    return res.status(401).json({ error: 'Bibliotecário não encontrado!' });
+  while (!librarian) {
+    const { email, senha } = req.body;
+    try {
+      librarian = await login(email, senha);
+    } catch (error) {
+      console.log(`Login failed: ${error.message}`);
+      if (!responseSent) {
+        res.status(401).json({ error: error.message });
+        responseSent = true;
+      }
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
 
-  const secretKey = process.env.SECRET_KEY || 'default_secret_key'; // <--- Adicionei um valor padrão para o secretKey
-  const token = jwt.sign({ librarian }, secretKey, { expiresIn: '1h' });
-
-  res.json({ token });
+  if (!responseSent) {
+    const secretKey = process.env.SECRET_KEY || 'default_secret_key'; 
+    const token = jwt.sign({ librarian }, secretKey, { expiresIn: '1h' });
+    res.json({ token });
+    await addHistoric('Login registrado', criadoEm);
+  }
 }
 
 async function updateLibrarian(req, res) {
@@ -128,7 +140,7 @@ async function deleteLibrarian(req, res) {
             return res.status(404).json({ message: 'Bibliotecário não encontrado.' });
         }
         await deleteLibrarianService(librarianId);
-        await addHistoric('Exclusão de bibliotecário registada', criadoEm);
+        await addHistoric('Exclusão de bibliotecário registrada', criadoEm);
         return res.status(200).json({ message: 'Bibliotecário excluído com sucesso.' });
     } catch (error) {
         console.error('Erro ao excluir bibliotecário:', error);
@@ -136,11 +148,18 @@ async function deleteLibrarian(req, res) {
     }
 }
 
+async function logout(req, res) {
+  req.session.destroy();
+  res.clearCookie('jwt');
+  res.redirect('/login');
+} 
+
 module.exports = {
     getLibrarians,
     getLibrarianBySearch,
     postLibrarian,
     updateLibrarian,
     deleteLibrarian,
-    postLogin
+    postLogin,
+    logout
 };

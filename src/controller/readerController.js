@@ -111,10 +111,10 @@ async function deleteReader(req, res) {
             return res.status(404).json({ message: 'Leitor não encontrado.' });
         }
         await deleteReaderService(readerId);
-        await addHistoric('Exclusão de leitor registrado');
+        await addHistoric('Exclusão de leitor registarda', criadoEm);
         return res.status(200).json({ message: 'Leitor excluído com sucesso.' });
     } catch (error) {
-        console.error('Erro ao excluir leitor:', error);
+        console.error('Erro ao leitor bibliotecário:', error);
         return res.status(500).json({ message: 'Erro interno do servidor.' });
     }
 }

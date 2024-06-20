@@ -23,7 +23,8 @@ const {
     postLibrarian,
     updateLibrarian,
     deleteLibrarian,
-    postLogin
+    postLogin,
+    logout
 } = require('./librarianController.js');
 
 router.get('/librarians', getLibrarians);
@@ -32,6 +33,7 @@ router.post('/librarians', postLibrarian);
 router.put('/librarians/:librarianId', updateLibrarian);
 router.delete('/librarians/:librarianId', deleteLibrarian);
 router.post('/login', postLogin);
+router.get('/logout', logout);
 
 
 const {

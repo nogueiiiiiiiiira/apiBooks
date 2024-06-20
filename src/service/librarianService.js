@@ -72,7 +72,6 @@ async function login(email, senha) {
   if (!isSenhaValid) {
     throw new Error('Senha incorreta!');
   }
-
   return librarian;
 }
 
@@ -147,7 +146,7 @@ async function deleteLibrarianService(id) {
             id: Number(id)
         }
     });
-}
+} 
 
 module.exports = {
   login,

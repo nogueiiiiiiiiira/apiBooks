@@ -153,11 +153,11 @@ async function updateReaderService(id, nome, cpf, email, telefone, dataNasc) {
 
 //deletar um leitor
 async function deleteReaderService(id) {
-    return await prisma.reader.delete({
-        where: {
-            id: Number(id)
-        }
-    });
+  return await prisma.reader.delete({
+      where: {
+          id: Number(id)
+      }
+  });
 }
 
 module.exports = {

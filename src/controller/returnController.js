@@ -19,7 +19,16 @@ const {
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const criadoEm = new Date().toISOString().substring(0, 10);
+const criadoEm = new Date().toISOString().slice(0, 10).split('-').join('/');
+
+function formatDate(date) {
+  const d = new Date(date);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 
 async function getReturns(req, res) {
   const returns = await listReturns();
@@ -60,8 +69,9 @@ async function postReturn(req, res) {
     }
 
     const [dia, mes, ano] = loan.dataDev.split('/');
-    const prevDev = new Date(`${ano}-${mes}-${dia}`).toISOString().slice(0, 10);
+    const prevDev = formatDate(`${ano}-${mes}-${dia}`);
     const dataAtual = new Date();
+    const criadoEm = formatDate(dataAtual);
     const prevDevDate = new Date(`${ano}-${mes}-${dia}`);
     const multaAtribuida = dataAtual.getTime() > prevDevDate.getTime() ? 'Sim' : 'Não';
 
@@ -84,6 +94,7 @@ async function postReturn(req, res) {
     return res.status(500).json({ message: `Erro ao realizar devolução: ${error.message}` });
   }
 }
+
 
 async function updateReturn(req, res) {
   const { cpf, idLivro } = req.body;
